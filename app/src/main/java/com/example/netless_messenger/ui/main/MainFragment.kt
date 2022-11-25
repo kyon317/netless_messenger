@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -34,8 +35,18 @@ class MainFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = RecyclerViewAdapter(exampleList)
 
+        //Back arrow does nothing in Main Fragment
+        MainActivity.backArrow.setOnClickListener {
+        }
+
         floatButton.setOnClickListener(){
             Toast.makeText(activity, "Floating Button Clicked", Toast.LENGTH_SHORT).show()
+
+            //Replace main fragment with Add Contact fragment
+            val transaction = parentFragmentManager
+            transaction.beginTransaction()
+                .replace(R.id.container, AddContactFragment())
+                .commitNow()
         }
         return mainFragmentView
     }
