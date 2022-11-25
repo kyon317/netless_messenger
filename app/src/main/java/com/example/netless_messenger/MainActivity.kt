@@ -1,5 +1,6 @@
 package com.example.netless_messenger
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
@@ -27,5 +28,9 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+
+        //To debug ChatActivity.kt
+//        val intent = Intent(this, ChatActivity::class.java)
+//        startActivity(intent)
     }
 }
