@@ -1,12 +1,15 @@
 package com.example.netless_messenger.ui.main
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.netless_messenger.ChatActivity
 import com.example.netless_messenger.R
+import kotlinx.coroutines.NonDisposableHandle.parent
 
 //TODO( "Change exampleList to live list of avaiable devices")
 class RecyclerViewAdapter(private val exampleList : ArrayList<String>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
@@ -25,7 +28,9 @@ class RecyclerViewAdapter(private val exampleList : ArrayList<String>): Recycler
         holder.deviceName.text = current
 
         curView.setOnClickListener{
-
+            val intent = Intent(it.context, ChatActivity::class.java)
+            // put chat refrence in intent
+            it.context.startActivity(intent)
         }
 
     }
