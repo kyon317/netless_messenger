@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.main.AddContactFragment">
+
+    <!-- Add Contacts Text View -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/add_contacts_tv"
+        android:background="@color/option_background"
+        android:text="Add Contacts"
+        android:textSize="25sp"
+        android:paddingLeft="30dp"
+        android:paddingTop="30dp"/>
+
+    <!-- Border -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"/>
+
+    <!-- Delete Chats Text View -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/delete_chat_tv"
+        android:background="@color/option_background"
+        android:text="Delete Chats"
+        android:textSize="25sp"
+        android:paddingLeft="30dp"
+        android:paddingTop="30dp"/>
+
+    <!-- Border -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"/>
+
+</LinearLayout>

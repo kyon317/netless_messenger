@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".ChatActivity">
 
     <!-- Action Bar -->
     <LinearLayout
@@ -30,16 +30,43 @@
             android:id="@+id/action_bar_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/app_name"
+            android:text="(Device Name Here)"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- Fragment Container -->
-    <androidx.fragment.app.FragmentContainerView
+    <!-- Chat Box -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/container"/>
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:paddingVertical="13dp"
+            android:paddingHorizontal="10dp"
+            android:inputType="textCapSentences|textMultiLine"
+            android:hint="Type Message Here"
+            android:id="@+id/chat_input_edit_text"
+            android:background="@drawable/chat_input_border"/>
+
+        <!-- Send Message Icon from Flaticon.com -->
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/send_message"
+            android:padding="10dp"
+            android:background="@drawable/chat_input_border"/>
+
+    </LinearLayout>
 
 </LinearLayout>
