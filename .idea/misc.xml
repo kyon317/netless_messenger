@@ -3,13 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/activity_main.xml" value="0.4265625" />
+        <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/add_contact_dialog.xml" value="0.24479166666666666" />
+        <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/chat_activity_layout.xml" value="0.12135416666666667" />
+        <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/fragment_add_contact.xml" value="0.12135416666666667" />
         <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/fragment_main.xml" value="0.23052536231884058" />
-        <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/add_contact_dialog.xml" value="0.25" />
-        <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/chat_activity_layout.xml" value="0.25" />
-        <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/fragment_add_contact.xml" value="0.25" />
-        <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/fragment_main.xml" value="0.25" />
-        <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/paired_element.xml" value="0.25" />
+        <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/paired_element.xml" value="0.4265625" />
+        <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/user_dummy.xml" value="0.25" />
       </map>
     </option>
   </component>

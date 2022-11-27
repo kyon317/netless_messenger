@@ -1,6 +1,12 @@
 package com.example.netless_messenger
 
+import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers.Main
@@ -19,10 +25,25 @@ class BT_TestViewModel: ViewModel() {
         availableDevices.value?.clear()
     }
 
-    fun retrieveDeviceNames(): ArrayList<String>{
+    fun retrieveDeviceNames(context : Context): ArrayList<String>{
         val nameList = ArrayList<String>()
         for(device in availableDevices.value!!){
-            nameList.add(device?.name)
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+//                return
+                Log.e(TAG, "retrieveDeviceNames: no permission", )
+            }
+            device?.name?.let { nameList.add(it) }
         }
         return nameList
     }
