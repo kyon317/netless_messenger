@@ -8,6 +8,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.netless_messenger.BT_TestViewModel
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
 
@@ -16,6 +21,8 @@ class AddContactFragment: Fragment() {
     private lateinit var addContactTextView: TextView
     private lateinit var deviceListView: View
     private lateinit var deviceListDialog: AlertDialog
+    private lateinit var btViewMode: BT_TestViewModel
+
 
     override fun onCreateView(
         inflater : LayoutInflater, container : ViewGroup?,
@@ -47,6 +54,19 @@ class AddContactFragment: Fragment() {
         cancelButton.setOnClickListener {
             deviceListDialog.dismiss()
         }
+        val deviceDialogRecyclerView = deviceListView.findViewById<RecyclerView>(R.id.deviceDialogRecyclerView)
+        btViewMode = ViewModelProvider(requireActivity()).get(BT_TestViewModel::class.java)
+        val btActiveDeviceList = btViewMode.retrieveDeviceNames(requireContext())
+        deviceDialogRecyclerView.layoutManager = LinearLayoutManager(activity)
+        deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), btActiveDeviceList)
+
+        btViewMode.availableDevices.observe(viewLifecycleOwner, Observer {
+            val activeList = btViewMode.retrieveDeviceNames(requireContext())
+            deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), btActiveDeviceList)
+        })
+
+
+
 
         //Build the custom alert dialog
         val builder = AlertDialog.Builder(activity)
