@@ -56,13 +56,13 @@ class AddContactFragment: Fragment() {
         }
         val deviceDialogRecyclerView = deviceListView.findViewById<RecyclerView>(R.id.deviceDialogRecyclerView)
         btViewMode = ViewModelProvider(requireActivity()).get(BT_TestViewModel::class.java)
-        val btActiveDeviceList = btViewMode.retrieveDeviceNames(requireContext())
+        //val btActiveDeviceList = btViewMode.retrieveDeviceNames(requireContext())
         deviceDialogRecyclerView.layoutManager = LinearLayoutManager(activity)
-        deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), btActiveDeviceList)
+        //deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), btActiveDeviceList)
 
         btViewMode.availableDevices.observe(viewLifecycleOwner, Observer {
             val activeList = btViewMode.retrieveDeviceNames(requireContext())
-            deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), btActiveDeviceList)
+            deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), activeList)
         })
 
 
