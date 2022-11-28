@@ -26,6 +26,7 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
 
         deviceName.text = cur
         curView.setOnClickListener(){
+            //TODO: Add Connectivity features here
 
         }
     }
