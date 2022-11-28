@@ -6,15 +6,20 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/deviceDialogRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/dialog_cancel_button"/>
 
     <Button
+        android:id="@+id/dialog_cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/dialog_cancel_button"
-        android:layout_alignBottom="@id/deviceDialogRecyclerView"
-        android:layout_centerHorizontal="true"
-        android:text="CANCEL"
-        android:layout_marginBottom="20dp"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="159dp"
+        android:layout_marginEnd="159dp"
+        android:layout_marginBottom="19dp"
+        android:layout_marginTop="10dp"
+        android:text="CANCEL" />
 
 </RelativeLayout>
