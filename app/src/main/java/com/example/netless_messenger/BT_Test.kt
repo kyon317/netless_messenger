@@ -12,19 +12,22 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 
-class BT_Test(activity: Activity, context: Context) {
+class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewModel) {
 
     private val activity = activity
     private val context = context
+    private var connected = false
     private var btAdapter: BluetoothAdapter?
     private var btManager: BluetoothManager?
-    var btViewModel = BT_TestViewModel()
+    val uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    //val uuid = UUID.fromString("00000000-0000-1000-8000-00805F9B34FB")
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     private val btReceiver = object : BroadcastReceiver() {
@@ -43,6 +46,10 @@ class BT_Test(activity: Activity, context: Context) {
                     connectDevice(btDevice)
                 }*/
 
+                /*if(deviceName == "Armaan's Galaxy S9"){
+                    connectDevice(btDevice)
+                }*/
+
                 //TODO: Display list of available connections
                 btViewModel.updateAvailableDevices(btDevice) //does this need to be suspend?
             }
@@ -55,20 +62,45 @@ class BT_Test(activity: Activity, context: Context) {
         context.registerReceiver(btReceiver, filter)
 
         btManager = context?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
-        btAdapter = btManager?.adapter
+         btAdapter = btManager?.adapter
+        val listenThread = Thread(){
+            startListening()
+        }
+        listenThread.start()
         val discoverThread = Thread(){
             btAdapter?.startDiscovery()
         }
         discoverThread.start()
     }
 
+    //TODO not working
+    private fun startListening()
+    {
+        var btServerSocket: BluetoothServerSocket?
+        btServerSocket = btAdapter?.listenUsingInsecureRfcommWithServiceRecord("BT_Test", uuid)
+        //btServerSocket = btAdapter?.listenUsingRfcommWithServiceRecord("BT_Test", uuid)
+        var btSocket: BluetoothServerSocket? = null
+        while(!connected){
+            try {
+                btServerSocket?.accept()
+            } catch (e: IOException) {
+                Log.e("Socket Accept Failed", "Socket's accept() method failed", e)
+                null
+            }
+            btSocket = btServerSocket
+            connected = true
+        }
+        if (btSocket != null){
+            Log.d("Here","Here")
+        }
+
+    }
+
     //Called by view model when device is selected from device view
-    private fun connectDevice(btDevice: BluetoothDevice?)
+    fun connectDevice(btDevice: BluetoothDevice?)
     {
         btAdapter?.cancelDiscovery()
 
-        val uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-        //val uuid = UUID.fromString("00000000-0000-1000-8000-00805F9B34FB")
         var btSocket: BluetoothSocket?
 
         btSocket = btDevice?.createInsecureRfcommSocketToServiceRecord(uuid)
@@ -77,6 +109,7 @@ class BT_Test(activity: Activity, context: Context) {
         //btSocket = btDevice?.createRfcommSocketToServiceRecord(UUID.randomUUID())
 
         //val pairedDevices = btAdapter?.bondedDevices //connection will fail if already bonded
+        Thread.sleep(1000)
         btSocket?.connect()
         Log.d("Here","Here")
 

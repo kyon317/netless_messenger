@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.netless_messenger.BT_Test
 import com.example.netless_messenger.BT_TestViewModel
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
@@ -21,7 +22,8 @@ class AddContactFragment: Fragment() {
     private lateinit var addContactTextView: TextView
     private lateinit var deviceListView: View
     private lateinit var deviceListDialog: AlertDialog
-    private lateinit var btViewMode: BT_TestViewModel
+    private lateinit var btViewModel: BT_TestViewModel
+    private lateinit var btInstance: BT_Test
 
 
     override fun onCreateView(
@@ -55,15 +57,17 @@ class AddContactFragment: Fragment() {
             deviceListDialog.dismiss()
         }
         val deviceDialogRecyclerView = deviceListView.findViewById<RecyclerView>(R.id.deviceDialogRecyclerView)
-        btViewMode = ViewModelProvider(requireActivity()).get(BT_TestViewModel::class.java)
+        btViewModel = ViewModelProvider(requireActivity()).get(BT_TestViewModel::class.java)
         //val btActiveDeviceList = btViewMode.retrieveDeviceNames(requireContext())
         deviceDialogRecyclerView.layoutManager = LinearLayoutManager(activity)
         //deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), btActiveDeviceList)
 
-        btViewMode.availableDevices.observe(viewLifecycleOwner, Observer {
-            val activeList = btViewMode.retrieveDeviceNames(requireContext())
-            deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), activeList)
+        btViewModel.availableDevices.observe(viewLifecycleOwner, Observer {
+            val activeList = btViewModel.retrieveDeviceNames(requireContext())
+            deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), activeList, this)
         })
+
+        btInstance = BT_Test(requireActivity(), requireContext(), btViewModel)
 
 
 
@@ -74,5 +78,13 @@ class AddContactFragment: Fragment() {
         deviceListDialog = builder.create()
 
         return addContactFragmentView
+    }
+
+    fun getBtInstance(): BT_Test{
+        return btInstance
+    }
+
+    fun getBtViewModel(): BT_TestViewModel{
+        return btViewModel
     }
 }

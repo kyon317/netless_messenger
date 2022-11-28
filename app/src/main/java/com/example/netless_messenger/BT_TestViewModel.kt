@@ -17,8 +17,10 @@ class BT_TestViewModel: ViewModel() {
     private var deviceArrayList: ArrayList<BluetoothDevice> = ArrayList()
 
     fun updateAvailableDevices(device:BluetoothDevice?){
-        deviceArrayList.add(device!!)
-        availableDevices.value = deviceArrayList
+        if(device?.name != null && !deviceArrayList.contains(device)){
+            deviceArrayList.add(device!!)
+            availableDevices.value = deviceArrayList
+        }
     }
 
     fun clearAvailableDevices(){

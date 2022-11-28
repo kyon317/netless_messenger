@@ -9,7 +9,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.R
 
-class DeviceListAdapter(private val context: Context, private val deviceNameList: ArrayList<String>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class DeviceListAdapter(private val context: Context, private val deviceNameList: ArrayList<String>, private val fragment: AddContactFragment): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewAdapter.MyViewHolder {
         val deviceListView = LayoutInflater.from(parent.context).inflate(
@@ -26,7 +26,9 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
 
         deviceName.text = cur
         curView.setOnClickListener(){
-
+           val btInstance = fragment.getBtInstance()
+            val device = fragment.getBtViewModel().retrieveDevice(cur)
+            btInstance.connectDevice(device)
         }
     }
 

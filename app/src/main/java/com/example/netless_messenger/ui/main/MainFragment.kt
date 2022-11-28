@@ -23,6 +23,7 @@ import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.BT_Test
+import com.example.netless_messenger.BT_TestViewModel
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,7 +38,6 @@ class MainFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var floatButton: FloatingActionButton
     private var exampleList: ArrayList<String> = arrayListOf("Jane Doe", "James Doe","Peter Parker")
-    private lateinit var btInstance: BT_Test
 
     override fun onCreateView(
         inflater : LayoutInflater, container : ViewGroup?,
@@ -63,8 +63,6 @@ class MainFragment : Fragment() {
                 .replace(R.id.container, AddContactFragment())
                 .commitNow()
         }
-
-        btInstance = BT_Test(requireActivity(), requireContext())
 
         return mainFragmentView
     }
