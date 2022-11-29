@@ -36,7 +36,7 @@ class MainFragment : Fragment() {
         recyclerView.adapter = RecyclerViewAdapter(exampleList)
 
         //To display custom view for when the recycler view is empty
-        val emptyDataObserver = NoContactObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
+        val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
         recyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
 
         //Back arrow does nothing in Main Fragment

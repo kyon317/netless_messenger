@@ -3,7 +3,7 @@ package com.example.netless_messenger.ui.main
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class NoContactObserver constructor(rv: RecyclerView?, ev: View?): RecyclerView.AdapterDataObserver() {
+class EmptyRecyclerObserver constructor(rv: RecyclerView?, ev: View?): RecyclerView.AdapterDataObserver() {
 
     private var emptyView: View? = null
     private var recyclerView: RecyclerView? = null
