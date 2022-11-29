@@ -63,13 +63,13 @@ class ExerciseViewModelFactory (private val repository: UserRepository) : ViewMo
 
         // set up database connection
         arrayList = ArrayList()
-        arrayAdapter = UIAdapter(this, arrayList)
-        database = ExerciseEntryDatabase.getInstance(this)
-        databaseDao = database.exerciseEntryDatabaseDao
-        repository = ExerciseEntryRepository(databaseDao)
-        viewModelFactory = ExerciseViewModelFactory(repository)
+        arrayAdapter = UserViewAdapter(this, arrayList)
+        database = database.getInstance(this)
+        databaseDao = database.UserDatabaseDao
+        repository = UserRepository(databaseDao)
+        viewModelFactory = UserViewModelFactory(repository)
         commentViewModel = ViewModelProvider(this, viewModelFactory).get(
-            ExerciseEntryViewModel.CommentViewModel::class.java)
+            UserViewModel.CommentViewModel::class.java)
 
         // update view model
         commentViewModel.allCommentsLiveData.observe(this, Observer { it ->
