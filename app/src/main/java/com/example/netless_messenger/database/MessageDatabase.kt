@@ -1,26 +1,25 @@
-package com.example.jiaqing_hu.database
+package com.example.netless_messenger.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.netless_messenger.database.User
 
-/* UserDatabase - An abstract database for entries */
+/* MessageDatabase - An abstract database for message entries */
 @Database(entities = [User::class], version = 1)
-abstract class UserDatabase: RoomDatabase() {
-    abstract val userDatabaseDao:UserDatabaseDao
+abstract class MessageDatabase: RoomDatabase() {
+    abstract val MessageDatabaseDao: MessageDatabaseDao
 
     companion object{
         @Volatile
-        private var INSTANCE:UserDatabase?=null
+        private var INSTANCE:MessageDatabase?=null
 
-        fun getInstance(context: Context):UserDatabase{
+        fun getInstance(context: Context):MessageDatabase{
             synchronized(this){
                 var instance = INSTANCE
                 if(instance == null){
                     instance = Room.databaseBuilder(context.applicationContext,
-                        UserDatabase::class.java, "user_table").build()
+                        MessageDatabase::class.java, "message_table").build()
                     INSTANCE = instance
                 }
                 return instance

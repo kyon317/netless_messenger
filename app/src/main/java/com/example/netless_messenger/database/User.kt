@@ -1,7 +1,9 @@
 package com.example.netless_messenger.database
 
-import java.util.*
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 /* User - data class
 *  id - user id, long
 *  userName - user name, string
