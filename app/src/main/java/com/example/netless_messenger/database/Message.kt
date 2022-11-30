@@ -19,6 +19,9 @@ data class Message(
     var userID : String = "",
 
     @ColumnInfo(name = "status")
-    var status : String = ""
+    var status : String = "",
+
+    @ColumnInfo(name = "msgType")
+    var msgType : String = "Text"
 
 )
