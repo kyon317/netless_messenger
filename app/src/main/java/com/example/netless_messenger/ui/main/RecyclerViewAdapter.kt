@@ -29,6 +29,7 @@ class RecyclerViewAdapter(private val exampleList : ArrayList<String>): Recycler
 
         curView.setOnClickListener{
             val intent = Intent(it.context, ChatActivity::class.java)
+            intent.putExtra("userName", current)
             // put chat refrence in intent
             it.context.startActivity(intent)
         }

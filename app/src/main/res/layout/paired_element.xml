@@ -37,6 +37,7 @@
             app:layout_constraintStart_toEndOf="@+id/displayImage"
             app:layout_constraintTop_toTopOf="parent" />
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
