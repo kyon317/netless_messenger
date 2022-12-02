@@ -28,7 +28,6 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
         curView.setOnClickListener(){
            val btInstance = fragment.getBtInstance()
             val device = fragment.getBtViewModel().retrieveDevice(cur)
-            //btInstance.fetchUUIDs(device)
             btInstance.attemptConnection(device)
         }
     }

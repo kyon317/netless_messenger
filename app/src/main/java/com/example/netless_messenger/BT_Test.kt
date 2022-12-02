@@ -6,9 +6,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.ParcelUuid
+import android.provider.Settings
+import android.provider.Settings.Secure
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.lang.Byte
 import java.util.*
 
 
@@ -20,14 +27,14 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
     private var btAdapter: BluetoothAdapter?
     private var btManager: BluetoothManager?
     //val MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-        //val MY_UUID = UUID.fromString("00001103-0000-1000-8000-00805f9b34fb") //Taryn's works?
+        val MY_UUID = UUID.fromString("00001103-0000-1000-8000-00805f9b34fb") //Taryn's works?
         //val MY_UUID = UUID.fromString("0000110a-0000-1000-8000-00805f9b34fb") //Taryn's alt 1
         //val MY_UUID = UUID.fromString("00001105-0000-1000-8000-00805f9b34fb") //Taryn's alt 2
         //val MY_UUID = UUID.fromString("00001106-0000-1000-8000-00805f9b34fb") //Taryn's alt 3 works?
         //val MY_UUID = UUID.fromString("00001115-0000-1000-8000-00805f9b34fb") //Taryn's alt 4
         //val MY_UUID = UUID.fromString("00001116-0000-1000-8000-00805f9b34fb") //Taryn's alt 5
         //val MY_UUID = UUID.fromString("0000110e-0000-1000-8000-00805f9b34fb") //Taryn's alt 6
-        val MY_UUID = UUID.fromString("0000112f-0000-1000-8000-00805f9b34fb") //Taryn's alt 7 works?
+        //val MY_UUID = UUID.fromString("0000112f-0000-1000-8000-00805f9b34fb") //Taryn's alt 7 works?
         //val MY_UUID = UUID.fromString("00001112-0000-1000-8000-00805f9b34fb") //Taryn's alt 8 works?
         //val MY_UUID = UUID.fromString("0000111f-0000-1000-8000-00805f9b34fb") //Taryn's alt 9 works?
         //val MY_UUID = UUID.fromString("00001132-0000-1000-8000-00805f9b34fb") //Taryn's alt 9
@@ -41,10 +48,12 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         //val MY_UUID = UUID.fromString("0000111f-0000-1000-8000-00805f9b34fb") //Armaan alt 6
         //val MY_UUID = UUID.fromString("00001132-0000-1000-8000-00805f9b34fb") //Armaan alt 7
         //val MY_UUID = UUID.fromString("594a34fc-31db-11ea-978f-2e728ce88125") //Armaan alt 8
+    //c407b4ee917e309c
 
     //val MY_UUID = UUID.fromString("00000000-0000-1000-8000-00805F9B34FB")
     private var connectThread: ConnectThread? = null
     private var acceptThread: AcceptThread? = null
+    private var manageConnectionThread: ManageConnectionThread? = null
 
     private val  TAG: String = "BT_TEST"
 
@@ -73,14 +82,6 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         btAdapter?.startDiscovery()
     }
 
-    //Retrieve UUID List from device
-    fun fetchUUIDs(device:BluetoothDevice?)
-    {
-        val uuidParcel = device?.uuids
-        val uuid = uuidParcel?.get(0)?.uuid
-        return
-    }
-
     fun attemptConnection(btDevice: BluetoothDevice?)
     {
         connectThread = ConnectThread(btDevice)
@@ -103,7 +104,7 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
 
         override fun run() {
             Log.d(TAG, "Socket Type: BEGIN acceptThread" + this)
-            var socket:BluetoothSocket?
+            var socket:BluetoothSocket? = null
 
             try{
                 socket = btServerSocket?.accept()
@@ -114,7 +115,11 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
                 Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
             })
             Log.e(TAG, "Socket accept() succeeded")
-            return
+
+            manageConnectionThread = ManageConnectionThread(socket)
+            manageConnectionThread?.start()
+            val testMessage = "Testing! Testing!"
+            manageConnectionThread?.writeOut(testMessage.toByteArray())
         }
 
         fun cancel(){
@@ -149,6 +154,8 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
             Log.i(TAG, "BEGIN connectThread")
             btAdapter?.cancelDiscovery()
 
+            //fetchUUIDs(device)
+
             // To remove bonded device
 //            if(btAdapter?.bondedDevices?.size!! > 0)
 //            {
@@ -177,6 +184,10 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
             activity.runOnUiThread(Runnable {
                 Toast.makeText(activity, "Socket connect() succeeded", Toast.LENGTH_SHORT).show()
             })
+
+            manageConnectionThread = ManageConnectionThread(btSocket)
+            manageConnectionThread?.start()
+
             synchronized(this@BT_Test) {
                 connectThread = null
             }
@@ -189,5 +200,71 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
                 Log.e(TAG, "close() of connect socket failed", e)
             }
         }
+
+        //Retrieve UUID List from device
+//        fun fetchUUIDs(device:BluetoothDevice?)
+//        {
+//            var uuidParcel = device?.uuids
+//            val name = device?.name
+//            var uuid = uuidParcel?.get(0)?.uuid
+//            while(uuid == null)
+//            {
+//                uuidParcel = device?.uuids
+//                uuid = uuidParcel?.get(0)?.uuid
+//            }
+//
+//            return
+//        }
     }
+
+    private inner class ManageConnectionThread(socket: BluetoothSocket?):Thread(){
+        private val socket = socket
+        private var iStream: InputStream?
+        private var oStream: OutputStream?
+
+        init {
+            iStream = socket?.inputStream
+            oStream = socket?.outputStream
+        }
+
+        override fun run() {
+            val MAX_SIZE_SINGLE_MESSAGE = 1024
+            var messageReceived = ByteArray(MAX_SIZE_SINGLE_MESSAGE)
+            while(true)
+            {
+                readIn(messageReceived)
+                if(messageReceived[0].toInt() != 0)
+                {
+                    var charset = Charsets.UTF_8
+                    val messageAsString = messageReceived.toString(charset)
+                    activity.runOnUiThread(Runnable {
+                        Toast.makeText(activity,"$messageAsString", Toast.LENGTH_LONG).show()
+                    })
+                }
+            }
+        }
+
+        fun readIn(messageReceived: ByteArray){
+            try {
+                iStream?.read(messageReceived)
+            } catch (e: IOException) {
+
+            }
+        }
+
+        fun writeOut(message: ByteArray)
+        {
+            oStream?.write(message)
+        }
+
+        fun cancel() {
+            try {
+                socket?.close()
+            } catch (e: IOException) {
+                Log.e(TAG, "close() of connected socket failed", e)
+            }
+        }
+    }
+
+
 }
