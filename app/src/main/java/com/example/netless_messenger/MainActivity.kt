@@ -83,6 +83,9 @@ class MainActivity : AppCompatActivity() {
            // Toast.makeText(this@MainActivity, permissions[0]+" Permission Granted", Toast.LENGTH_SHORT).show()
         } else {
             if (permissions.isNotEmpty())
+            {
+
+            }
            //     Toast.makeText(this@MainActivity, permissions[0]+" Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }

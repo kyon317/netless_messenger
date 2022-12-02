@@ -20,17 +20,17 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
     private var btAdapter: BluetoothAdapter?
     private var btManager: BluetoothManager?
     //val MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-        val MY_UUID = UUID.fromString("00001103-0000-1000-8000-00805f9b34fb") //Taryn's sort of works?
+        //val MY_UUID = UUID.fromString("00001103-0000-1000-8000-00805f9b34fb") //Taryn's works?
         //val MY_UUID = UUID.fromString("0000110a-0000-1000-8000-00805f9b34fb") //Taryn's alt 1
         //val MY_UUID = UUID.fromString("00001105-0000-1000-8000-00805f9b34fb") //Taryn's alt 2
-        //val MY_UUID = UUID.fromString("00001106-0000-1000-8000-00805f9b34fb") //Taryn's alt 3 sort of works?
+        //val MY_UUID = UUID.fromString("00001106-0000-1000-8000-00805f9b34fb") //Taryn's alt 3 works?
         //val MY_UUID = UUID.fromString("00001115-0000-1000-8000-00805f9b34fb") //Taryn's alt 4
         //val MY_UUID = UUID.fromString("00001116-0000-1000-8000-00805f9b34fb") //Taryn's alt 5
         //val MY_UUID = UUID.fromString("0000110e-0000-1000-8000-00805f9b34fb") //Taryn's alt 6
-        //val MY_UUID = UUID.fromString("0000112f-0000-1000-8000-00805f9b34fb") //Taryn's alt 7 sort of works?
-        //val MY_UUID = UUID.fromString("00001112-0000-1000-8000-00805f9b34fb") //Taryn's alt 8 sort of works?
-        //val MY_UUID = UUID.fromString("0000111f-0000-1000-8000-00805f9b34fb") //Taryn's alt 9 sort of works?
-        //val MY_UUID = UUID.fromString("00001132-0000-1000-8000-00805f9b34fb") //Taryn's alt 9 sort of works? weird behaviour
+        val MY_UUID = UUID.fromString("0000112f-0000-1000-8000-00805f9b34fb") //Taryn's alt 7 works?
+        //val MY_UUID = UUID.fromString("00001112-0000-1000-8000-00805f9b34fb") //Taryn's alt 8 works?
+        //val MY_UUID = UUID.fromString("0000111f-0000-1000-8000-00805f9b34fb") //Taryn's alt 9 works?
+        //val MY_UUID = UUID.fromString("00001132-0000-1000-8000-00805f9b34fb") //Taryn's alt 9
 
         //val MY_UUID = UUID.fromString("0000110a-0000-1000-8000-00805f9b34fb") //Armaan and? Brayden's
         //val MY_UUID = UUID.fromString("00001105-0000-1000-8000-00805f9b34fb") //Armaan alt 1
