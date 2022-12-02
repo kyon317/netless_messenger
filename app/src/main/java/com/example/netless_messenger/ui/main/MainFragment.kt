@@ -50,6 +50,10 @@ class MainFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = RecyclerViewAdapter(exampleList)
 
+        //To display custom view for when the recycler view is empty
+        val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
+        recyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
+
         //Back arrow does nothing in Main Fragment
         MainActivity.backArrow.setOnClickListener {
         }
@@ -72,6 +76,5 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // TODO: Use the ViewModel
     }
-
 
 }
