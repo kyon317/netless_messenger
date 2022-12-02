@@ -23,5 +23,9 @@ data class User(
     var deviceName : String = "",
 
     @ColumnInfo(name = "deviceID")
-    var deviceID : String = ""
+    var deviceID : String = "",
+
+    @ColumnInfo(name = "deviceMAC")
+    var deviceMAC : String = ""
+
 )

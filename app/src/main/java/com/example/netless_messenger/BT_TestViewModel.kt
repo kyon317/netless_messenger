@@ -14,6 +14,8 @@ import kotlinx.coroutines.withContext
 
 class BT_TestViewModel: ViewModel() {
     var availableDevices = MutableLiveData<ArrayList<BluetoothDevice>>()
+    var isConnected = MutableLiveData<Boolean>(false)
+
     private var deviceArrayList: ArrayList<BluetoothDevice> = ArrayList()
 
     fun updateAvailableDevices(device:BluetoothDevice?){
@@ -49,6 +51,8 @@ class BT_TestViewModel: ViewModel() {
         }
         return nameList
     }
+
+    //TODO: Write function to get is connected
 
     fun retrieveDevice(deviceName:String):BluetoothDevice?{
         for(device in availableDevices.value!!){
