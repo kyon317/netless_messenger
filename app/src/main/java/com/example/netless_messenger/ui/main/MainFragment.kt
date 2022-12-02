@@ -55,7 +55,6 @@ class MainFragment : Fragment() {
         }
 
         floatButton.setOnClickListener(){
-            Toast.makeText(activity, "Floating Button Clicked", Toast.LENGTH_SHORT).show()
 
             //Replace main fragment with Add Contact fragment
             val transaction = parentFragmentManager
