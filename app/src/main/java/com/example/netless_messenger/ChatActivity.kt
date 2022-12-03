@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.netless_messenger.database.Message
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 
 class ChatActivity: AppCompatActivity() {
@@ -26,7 +27,7 @@ class ChatActivity: AppCompatActivity() {
         val uName = intent.getStringExtra("userName").toString()
 
         //Temp structure
-        val tempMessageList = ArrayList<String>()
+        val tempMessageList = ArrayList<Message>()
 
         supportActionBar?.title = uName
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -44,8 +45,12 @@ class ChatActivity: AppCompatActivity() {
 
         //TEMP FEATURE
         sendButton.setOnClickListener(){
-            val message = editText.text.toString()
-            if(message != ""){
+            val message = Message()
+            message.status = Global.STATUS[1] //status = "snd"
+            message.msgBody = editText.text.toString()
+            //message.timestamp
+            //message.userid
+            if(message.msgBody != ""){
                 tempMessageList.add(message)
                 messageRecyclerView.adapter = MessageViewAdapter(tempMessageList)
                 editText.setText("")

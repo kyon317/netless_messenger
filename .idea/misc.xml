@@ -11,10 +11,9 @@
         <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/paired_element.xml" value="0.4265625" />
         <entry key="..\:/Users/Vincent/AndroidStudioProjects/Netless_Messenger/app/src/main/res/layout/user_dummy.xml" value="0.25" />
         <entry key="..\:/Users/armaa/AndroidStudioProjects/netless_messenger/app/src/main/res/layout/paired_element.xml" value="0.21603260869565216" />
-        <entry key="app/src/main/res/layout/add_contact_dialog.xml" value="0.11822916666666666" />
         <entry key="app/src/main/res/layout/chat_activity_layout.xml" value="0.1621376811594203" />
-        <entry key="app/src/main/res/layout/fragment_add_contact.xml" value="0.3194100200266079" />
-        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.1621376811594203" />
+        <entry key="app/src/main/res/layout/message_element_send_recieve.xml" value="0.2621557926786119" />
+        <entry key="app/src/main/res/menu/menu_chat_custom.xml" value="0.26145833333333335" />
       </map>
     </option>
   </component>
