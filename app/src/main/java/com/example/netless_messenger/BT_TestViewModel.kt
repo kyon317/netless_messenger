@@ -9,8 +9,6 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.withContext
 
 class BT_TestViewModel: ViewModel() {
     var availableDevices = MutableLiveData<ArrayList<BluetoothDevice>>()

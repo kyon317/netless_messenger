@@ -7,7 +7,21 @@
     android:orientation="vertical"
     tools:context=".ui.main.AddContactFragment">
 
+
+
     <!-- Add Contacts Text View -->
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="Discovery Mode"
+        android:textSize="25sp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:switchMinWidth="50dp"
+        android:switchPadding="10dp"
+        />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="100dp"
