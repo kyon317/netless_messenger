@@ -1,11 +1,15 @@
 package com.example.netless_messenger.ui.main
 
 import android.app.AlertDialog
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Switch
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -24,6 +28,11 @@ class AddContactFragment: Fragment() {
     private lateinit var deviceListDialog: AlertDialog
     private lateinit var btViewModel: BT_TestViewModel
     private lateinit var btInstance: BT_Test
+    private lateinit var discoverySwitch: Switch
+    companion object{
+        const val RESULT_OK = 90
+    }
+
 
 
     override fun onCreateView(
@@ -40,6 +49,35 @@ class AddContactFragment: Fragment() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+
+
+        discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)
+        discoverySwitch.setOnClickListener {
+            if (discoverySwitch.isChecked) {
+                val requestCode = 1;
+                val discoverableIntent: Intent =
+                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, RESULT_OK)
+                    }
+
+                startActivityForResult(discoverableIntent, requestCode)
+                discoverySwitch.isClickable = false
+
+                object : CountDownTimer(RESULT_OK*1000L, 1000) {
+
+                    override fun onTick(millisUntilFinished: Long) {
+                    }
+
+                    override fun onFinish() {
+                        discoverySwitch.isClickable = true
+                        discoverySwitch.isChecked = false
+                    }
+                }.start()
+
+
+            }
+        }
+
 
         //Set Add Contact Text View to show Device List Dialog if pressed
         addContactTextView = addContactFragmentView.findViewById(R.id.add_contacts_tv)
@@ -86,5 +124,12 @@ class AddContactFragment: Fragment() {
 
     fun getBtViewModel(): BT_TestViewModel{
         return btViewModel
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
+        else discoverySwitch.isChecked = false
     }
 }

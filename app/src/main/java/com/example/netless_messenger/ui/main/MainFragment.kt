@@ -1,29 +1,13 @@
 package com.example.netless_messenger.ui.main
 
-import android.Manifest
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.netless_messenger.BT_Test
-import com.example.netless_messenger.BT_TestViewModel
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -54,6 +38,8 @@ class MainFragment : Fragment() {
         val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
         recyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
 
+//
+
         //Back arrow does nothing in Main Fragment
         MainActivity.backArrow.setOnClickListener {
         }
@@ -75,5 +61,6 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // TODO: Use the ViewModel
     }
+
 
 }

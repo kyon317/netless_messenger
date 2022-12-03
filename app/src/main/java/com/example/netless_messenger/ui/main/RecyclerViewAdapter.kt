@@ -9,7 +9,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.ChatActivity
 import com.example.netless_messenger.R
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 //TODO( "Change exampleList to live list of avaiable devices")
 class RecyclerViewAdapter(private val exampleList : ArrayList<String>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
