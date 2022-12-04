@@ -20,6 +20,8 @@ class ChatActivity: AppCompatActivity() {
     private lateinit var viewModelFactory: MessageViewModelFactory
     private lateinit var commentViewModel: MessageViewModel.CommentViewModel
 
+    private lateinit var messageTest: MessageTestViewModel
+
     private lateinit var editText: EditText
     private lateinit var sendButton: ImageView
     private lateinit var messageRecyclerView: RecyclerView
@@ -32,6 +34,9 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_list)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        //TESTING
+        messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
+
 
         val uName = intent.getStringExtra("userName").toString()
 
@@ -42,9 +47,9 @@ class ChatActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        initDatabase()
+        //initDatabase()
 
-        commentViewModel.allCommentsLiveData.observe(this) {
+        messageTest.allCommentsLiveData.observe(this) {
 
         }
 
@@ -91,9 +96,9 @@ class ChatActivity: AppCompatActivity() {
     }
 
     private fun setMessage(message: Message) {
-        commentViewModel.insert(message)
+        messageTest.insert(message)
         Log.e(TAG, "message inserted")
-//        val allMessage = commentViewModel.allCommentsLiveData
-//        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+        val allMessage = messageTest.allCommentsLiveData
+        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 }

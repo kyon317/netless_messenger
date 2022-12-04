@@ -9,22 +9,16 @@ import kotlinx.coroutines.launch
 class MessageRepository(private val messageDatabaseDao : MessageDatabaseDao) {
     val allComments: Flow<List<Message>> = messageDatabaseDao.getAllEntries()
 
-    fun insert(message : Message){
-        CoroutineScope(Dispatchers.IO).launch{
+    suspend fun insert(message : Message){
             messageDatabaseDao.insertEntry(message)
-        }
     }
 
-    fun delete(id: Long){
-        CoroutineScope(Dispatchers.IO).launch {
+    suspend fun delete(id: Long){
             messageDatabaseDao.deleteComment(id)
-        }
     }
 
-    fun deleteAll(){
-        CoroutineScope(Dispatchers.IO).launch {
+    suspend fun deleteAll(){
             messageDatabaseDao.deleteAll()
-        }
     }
 
 }
