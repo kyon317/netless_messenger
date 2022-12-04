@@ -73,7 +73,7 @@ class ChatActivity: AppCompatActivity() {
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
                 tempMessageList.add(entry)
-                messageRecyclerView.adapter = MessageViewAdapter(tempMessageList)
+//                messageRecyclerView.adapter = MessageViewAdapter(tempMessageList)
                 setMessage(entry)
                 editText.setText("")
                 messageRecyclerView.scrollToPosition(tempMessageList.size - 1)
