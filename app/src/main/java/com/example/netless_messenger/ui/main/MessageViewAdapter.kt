@@ -28,6 +28,8 @@ class MessageViewAdapter(private val messageList: ArrayList<Message>): RecyclerV
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+        //TODO: Deal with user ID stuff
+
         val currMessage = messageList[position]
 
         val send_group = holder.itemView.findViewById<RelativeLayout>(R.id.send_group)

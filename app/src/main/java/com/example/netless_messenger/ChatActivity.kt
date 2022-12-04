@@ -58,9 +58,10 @@ class ChatActivity: AppCompatActivity() {
         //}
 
         //TEMP FEATURE
-        sendButton.setOnClickListener(){
+        sendButton.setOnClickListener{
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
+            //TODO: Implement user ID stuff
             entry.userID = "1" //Still need to be fixed
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
