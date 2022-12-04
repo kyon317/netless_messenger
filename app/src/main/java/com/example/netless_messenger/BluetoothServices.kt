@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
@@ -27,10 +28,17 @@ class BluetoothServices:Service() {
     private var acceptThread: BluetoothServices.AcceptThread? = null
     private var manageConnectionThread: BluetoothServices.ManageConnectionThread? = null
     private var message = Message()
+    private var msgHandler: Handler? = null
     private var testMessage:String = ""
-    private val TAG: String = "BT_TEST"
+    private val TAG: String = "BT_Services"
 
     private lateinit var deviceList : ArrayList<BluetoothClass.Device>
+    private lateinit var myBinder: MyBinder
+
+    companion object{
+        const val DEVICE_VALUE = 0
+        const val MESSAGE_VALUE = 1
+    }
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -48,21 +56,44 @@ class BluetoothServices:Service() {
         acceptThread = AcceptThread()
         acceptThread?.start()
         btAdapter?.startDiscovery()
+
+        myBinder = MyBinder()
+        Log.e(TAG, "onCreate: debug: Service onCreate() called")
     }
 
+    override fun onStartCommand(intent : Intent?, flags : Int, startId : Int) : Int {
+        return START_STICKY
+    }
     // Create a BroadcastReceiver for ACTION_FOUND.
     private val btReceiver = object : BroadcastReceiver() {
+        @SuppressLint("MissingPermission")
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
             if (BluetoothDevice.ACTION_FOUND == action) {
                 val btDevice = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
 //                TODO!! update device list
+                if (btDevice != null) {
+//                    Log.e(TAG, "onReceive: ${btDevice.name}")
+                    val deviceMsg = msgHandler?.obtainMessage()
+                    if (deviceMsg != null) {
+                        val bundle = Bundle()
+                        bundle.putParcelable("Device",btDevice)
+                        deviceMsg.data = bundle
+                        deviceMsg.what = DEVICE_VALUE
+                        msgHandler?.sendMessage(deviceMsg)
+                    }else
+                    {
+                        Log.e(TAG, "onReceive: dmsg is null" )
+                    }
+
+
+                }
 //                btViewModel.updateAvailableDevices(btDevice)
             }
         }
     }
 
-    // Create a message body receiver
+    // TODO: Create a message body receiver
     private val msgReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val msgBody = intent.getStringExtra("msgBody")
@@ -73,21 +104,27 @@ class BluetoothServices:Service() {
     }
 
     override fun onBind(intent : Intent?) : IBinder? {
+        Log.e(TAG, "onBind: debug: Service onBind() called")
+        return myBinder
+    }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.e(TAG, "onUnbind: debug: Service onUnBind() called~~~", )
+        msgHandler = null
+        return true
     }
 
     //
     inner class MyBinder : Binder() {
         fun setmsgHandler(msgHandler: Handler) {
-            this@Bluetooth.msgHandler = msgHandler
+            this@BluetoothServices.msgHandler = msgHandler
         }
     }
 
-    // send received msg to database
+    // TODO: send received msg to database
     private fun sendMsg(){
 
     }
-
 
     // Accept Thread: Accept on connection, keep listening for a bluetooth connection
     @SuppressLint("MissingPermission")
@@ -106,7 +143,7 @@ class BluetoothServices:Service() {
         }
 
         override fun run() {
-            Log.d(TAG, "Socket Type: BEGIN accept Thread" + this)
+            Log.e(TAG, "Socket Type: BEGIN accept Thread" + this)
             var socket: BluetoothSocket? = null
 
             try{
@@ -234,4 +271,6 @@ class BluetoothServices:Service() {
             }
         }
     }
+
+
 }

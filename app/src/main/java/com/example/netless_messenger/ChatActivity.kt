@@ -10,7 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.netless_messenger.database.*
+import com.example.netless_messenger.database.Message
+import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 
 class ChatActivity: AppCompatActivity() {

@@ -2,6 +2,8 @@ package com.example.netless_messenger
 
 import android.Manifest
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -20,13 +22,15 @@ class MainActivity : AppCompatActivity() {
     companion object {
         lateinit var backArrow: ImageView
         lateinit var messageTest: MessageTestViewModel
+        lateinit var deviceViewModel:DeviceViewModel
     }
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        deviceViewModel = DeviceViewModel()
         checkPermission()
+
 
         //Hide default action bar
         supportActionBar?.hide()
@@ -49,7 +53,18 @@ class MainActivity : AppCompatActivity() {
 //        startActivity(intent)
     }
 
+    // start bluetooth services
+    private fun startServices(){
+        val bluetoothServicesIntent = Intent(this,BluetoothServices::class.java)
+        startService(bluetoothServicesIntent)
+        this.applicationContext.bindService(bluetoothServicesIntent, deviceViewModel, Context.BIND_AUTO_CREATE)
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val deviceViewModel = DeviceViewModel()
+        this.applicationContext.unbindService(deviceViewModel)
+    }
     private fun checkPermission() {
         if (Build.VERSION.SDK_INT < 23) return
         if (ContextCompat.checkSelfPermission(this,
@@ -63,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 10)
         else{
             Log.e(TAG, "Bluetooth permission granted")
+            startServices()
         }
 
     }
@@ -72,10 +88,12 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 10) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.e(TAG, "Bluetooth permission granted")
+                startServices()
             }
         }
 
     }
+
 
 
 }
