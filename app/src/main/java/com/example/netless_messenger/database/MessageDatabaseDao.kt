@@ -17,13 +17,13 @@ interface MessageDatabaseDao {
     //It supports coroutines throughout its API, so you can transform a flow using coroutines as well!
     //Code inside the flow { ... } builder block can suspend. So the function is no longer marked with suspend modifier.
     //See more details here: https://kotlinlang.org/docs/flow.html#flows
-    @Query("SELECT * FROM user_table")
+    @Query("SELECT * FROM message_table")
     fun getAllEntries(): Flow<List<Message>>
 
-    @Query("DELETE FROM user_table")
+    @Query("DELETE FROM message_table")
     suspend fun deleteAll()
 
-    @Query("DELETE FROM user_table WHERE id = :key") //":" indicates that it is a Bind variable
+    @Query("DELETE FROM message_table WHERE id = :key") //":" indicates that it is a Bind variable
     suspend fun deleteComment(key: Long)
 
 }

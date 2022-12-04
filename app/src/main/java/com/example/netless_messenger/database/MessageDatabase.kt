@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 /* MessageDatabase - An abstract database for message entries */
-@Database(entities = [User::class], version = 1)
+@Database(entities = [Message::class], version = 1)
 abstract class MessageDatabase: RoomDatabase() {
     abstract val MessageDatabaseDao: MessageDatabaseDao
 
