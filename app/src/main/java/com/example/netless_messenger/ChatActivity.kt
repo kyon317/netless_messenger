@@ -1,6 +1,7 @@
 package com.example.netless_messenger
 
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
@@ -9,16 +10,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.netless_messenger.database.*
+import com.example.netless_messenger.database.Message
+import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
-    private lateinit var database: MessageDatabase
-    private lateinit var databaseDao: MessageDatabaseDao
-    private lateinit var repository: MessageRepository
-    private lateinit var viewModelFactory: MessageViewModelFactory
-    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
+//    private lateinit var database: MessageDatabase
+//    private lateinit var databaseDao: MessageDatabaseDao
+//    private lateinit var repository: MessageRepository
+//    private lateinit var viewModelFactory: MessageViewModelFactory
+//    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
+
+    private lateinit var messageTest: MessageTestViewModel
 
     private lateinit var editText: EditText
     private lateinit var sendButton: ImageView
@@ -32,32 +36,24 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_list)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
 
         val uName = intent.getStringExtra("userName").toString()
-
-        //Temp structure
-        val tempMessageList = ArrayList<Message>()
 
         supportActionBar?.title = uName
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        initDatabase()
+        //initDatabase()
 
-        commentViewModel.allCommentsLiveData.observe(this) {
+        messageTest.allCommentsLiveData.observe(this) {
 
+        //commentViewModel.allCommentsLiveData.observe(this) {
+            // show send message history
+            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
+            messageRecyclerView.scrollToPosition(it.size - 1)
         }
 
-        //Hide default action bar
-        //supportActionBar?.hide()
-
-        //Return to Main Activity if backArrow is pressed
-        //menuTitle.text = uName
-        //backArrow.setOnClickListener {
-            //finish()
-        //}
-
-        //TEMP FEATURE
         sendButton.setOnClickListener{
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
@@ -66,11 +62,9 @@ class ChatActivity: AppCompatActivity() {
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
-                tempMessageList.add(entry)
-                messageRecyclerView.adapter = MessageViewAdapter(tempMessageList)
                 setMessage(entry)
                 editText.setText("")
-                messageRecyclerView.scrollToPosition(tempMessageList.size - 1)
+//                sendMessage(entry)
             }
         }
 
@@ -81,19 +75,29 @@ class ChatActivity: AppCompatActivity() {
         return true
     }
 
-    private fun initDatabase() {
-        database = MessageDatabase.getInstance(this)
-        databaseDao = database.MessageDatabaseDao
-        repository = MessageRepository(databaseDao)
-        viewModelFactory = MessageViewModelFactory(repository)
-        commentViewModel = ViewModelProvider(this, viewModelFactory).get(
-            MessageViewModel.CommentViewModel::class.java)
-    }
+//    private fun initDatabase() {
+//        database = MessageDatabase.getInstance(this)
+//        databaseDao = database.MessageDatabaseDao
+//        repository = MessageRepository(databaseDao)
+//        viewModelFactory = MessageViewModelFactory(repository)
+//        commentViewModel = ViewModelProvider(this, viewModelFactory).get(
+//            MessageViewModel.CommentViewModel::class.java)
+//    }
 
     private fun setMessage(message: Message) {
-        commentViewModel.insert(message)
+        messageTest.insert(message)
         Log.e(TAG, "message inserted")
-//        val allMessage = commentViewModel.allCommentsLiveData
-//        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+        val allMessage = messageTest.allCommentsLiveData
+        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+    }
+
+
+
+
+    private fun sendMessage(snd_msg : Message){
+        val msgIntent = Intent()
+        msgIntent.action = "SENDMSG"
+        msgIntent.putExtra("msgBody", snd_msg.msgBody)
+        sendBroadcast(msgIntent)
     }
 }
