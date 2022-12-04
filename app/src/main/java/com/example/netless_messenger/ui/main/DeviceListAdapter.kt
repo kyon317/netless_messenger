@@ -1,7 +1,6 @@
 package com.example.netless_messenger.ui.main
 
 import android.annotation.SuppressLint
-import android.app.Service
 import android.bluetooth.BluetoothDevice
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -37,7 +36,10 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
            
         // TODO: start connection when clicked on a device
         curView.setOnClickListener(){
-            if (cur.name!=null) startServices(cur)
+            if (cur.name!=null) {
+                startBluetoothServices(cur)
+                startConnectionServices(cur)
+            }
 //            val btInstance = fragment.getBtInstance()
 //            val device = fragment.getBtViewModel().retrieveDevice(cur)
 //            btInstance.attemptConnection(device)
@@ -49,12 +51,22 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
     }
 
     // start bluetooth services
-    private fun startServices(targetDevice : BluetoothDevice){
-        val bluetoothServicesIntent = Intent(context,ConnectionService::class.java)
+    private fun startBluetoothServices(targetDevice : BluetoothDevice){
+        val bluetoothServicesIntent = Intent(context,BluetoothServices::class.java)
         bluetoothServicesIntent.putExtra("Device",targetDevice)
         context.startService(bluetoothServicesIntent)
-//        context.applicationContext.bindService(bluetoothServicesIntent,
-//            MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
+        context.applicationContext.bindService(bluetoothServicesIntent,
+            MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
+
+    }
+    // start bluetooth services
+    private fun startConnectionServices(targetDevice : BluetoothDevice){
+        val connectionServicesIntent = Intent(context,ConnectionService::class.java)
+        connectionServicesIntent.putExtra("Device",targetDevice)
+        context.startService(connectionServicesIntent)
+        context.applicationContext.bindService(connectionServicesIntent,
+            MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
+
     }
 
     override fun onDetachedFromRecyclerView(recyclerView : RecyclerView) {

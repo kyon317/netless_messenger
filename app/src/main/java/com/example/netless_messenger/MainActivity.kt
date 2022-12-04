@@ -23,12 +23,14 @@ class MainActivity : AppCompatActivity() {
         lateinit var backArrow: ImageView
         lateinit var messageTest: MessageTestViewModel
         lateinit var deviceViewModel:DeviceViewModel
+        lateinit var chatViewModel:ChatViewModel
     }
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         deviceViewModel = DeviceViewModel()
+        chatViewModel = ChatViewModel()
         checkPermission()
 
 

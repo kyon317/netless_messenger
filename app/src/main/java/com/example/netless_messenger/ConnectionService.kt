@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
@@ -16,59 +17,151 @@ import com.example.netless_messenger.database.Message
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.charset.Charset
 import java.util.*
+import kotlin.concurrent.thread
 
 class ConnectionService() : Service() {
+    companion object  {
+        const val MESSAGE_VALUE = 0
+    }
+
     private var msgHandler: Handler? = null
     private var btManager: BluetoothManager? = null
     private var btAdapter: BluetoothAdapter? = null
     private lateinit var myBinder:MyBinder
-    private var connectThread: ConnectionService.ConnectThread? = null
-    private var manageConnectionThread: ConnectionService.ManageConnectionThread? = null
     private var MY_UUID = UUID.fromString("578fa54b-a381-466f-970c-9200436d9981")
     private lateinit var btDevice : BluetoothDevice
-
+    private var bluetoothSocket : BluetoothSocket?=null
+    var isBlueConnected: Boolean = false
+    private val ENCODING_FORMAT = "GBK"
+    @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
-        btAdapter = btManager?.adapter
+//        btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
+        btAdapter = BluetoothAdapter.getDefaultAdapter()
         myBinder = MyBinder()
+
         // Register for broadcasts when a msg is sent.
         val msgFilter = IntentFilter("SENDMSG")
         this.applicationContext.registerReceiver(msgReceiver, msgFilter)
     }
 
 
+    @SuppressLint("MissingPermission")
     override fun onStartCommand(intent : Intent?, flags : Int, startId : Int) : Int {
         if (intent != null) {
             btDevice = intent.getParcelableExtra<BluetoothDevice>("Device")!!
-            attemptConnection()
+            bluetoothSocket = btDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID)
+            funStartBlueClientConnect()
+            funBlueClientStartReceive()
         }
         return START_STICKY
     }
 
-    // TODO: Create a message body receiver
     private val msgReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val msgBody = intent.getStringExtra("msgBody")
             if (msgBody != null) {
-                sendMessage(msgBody)
+                funBlueClientSend(msgBody)
             }
         }
     }
 
-    // try to send Message
-    private fun sendMessage(msgBody:String){
-        manageConnectionThread?.writeOut(msgBody.toByteArray())
+    // start Blue tooth client
+    @SuppressLint("MissingPermission")
+    private fun funStartBlueClientConnect() {
+        thread {
+            try {
+                // will block if runs in main thread
+                if (bluetoothSocket == null || !isBlueConnected) {
+                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery()
+                    bluetoothSocket!!.connect()
+                    isBlueConnected = true
+                }
+            } catch (e: IOException) {
+                // handle exception
+                e.printStackTrace()
+            }
+        }
     }
 
-    // attempt connection to the selected device
-    private fun attemptConnection()
-    {
-        connectThread = ConnectThread(btDevice)
-        connectThread?.start()
+    // start receiving
+    private fun funBlueClientStartReceive() {
+        thread {
+            while (true) {
+                try {
+                    if (bluetoothSocket != null) {
+                        if (bluetoothSocket!!.isConnected) {
+                            Log.e("eee", "Connection available")
+                            receiveMessage()
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.e(TAG, "funBlueClientStartReceive:" + e.toString())
+                }
+            }
+        }
     }
 
+    // receive and parse message
+    private fun receiveMessage() {
+        val mmInStream: InputStream = bluetoothSocket!!.inputStream
+        val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
+        var bytes = 0
+        while (true) {
+            // read from the InputStream.
+            try {
+                bytes = mmInStream.read(mmBuffer)
+            } catch (e: IOException) {
+                Log.d(TAG, "Input stream was disconnected", e)
+                break
+            }
+
+            // TODO: it is able to send message but won't receive any
+            val message = android.os.Message()
+            val bundle = Bundle()
+            // GBK encoding by default
+            val string = String(mmBuffer, 0, bytes, Charset.forName(ENCODING_FORMAT))
+            bundle.putString("Message", string)
+            message.what = MESSAGE_VALUE   // 0 = rcv
+            message.data = bundle
+            this@ConnectionService.msgHandler?.sendMessage(message)
+            val rcv_msg = Message()
+            rcv_msg.msgBody = string
+            rcv_msg.status = "rcv"
+            MainActivity.messageTest.insert(rcv_msg)
+            Log.e("receive", string)
+        }
+    }
+
+    // send message via bluetooth
+    private fun funBlueClientSend(input: String) {
+        if (bluetoothSocket != null && isBlueConnected) {
+            try {
+                bluetoothSocket!!.outputStream.write(input.toByteArray(Charset.forName(ENCODING_FORMAT)))
+                Log.e(TAG, "funBlueClientSend: ${input}", )
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Log.e(TAG, "sendCommand: Failed to send message", e)
+            }
+        }
+    }
+
+    // disconnect current bluetooth connection
+    private fun disconnect() {
+        if (bluetoothSocket != null) {
+            try {
+                bluetoothSocket!!.close()
+                bluetoothSocket = null
+                isBlueConnected = false
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Log.e(TAG, "disconnect: failed to disconnect", e)
+            }
+        }
+    }
 
     // Bind & Unbind
     override fun onBind(intent : Intent?) : IBinder? {
@@ -84,117 +177,6 @@ class ConnectionService() : Service() {
     inner class MyBinder : Binder() {
         fun setmsgHandler(msgHandler: Handler) {
             this@ConnectionService.msgHandler = msgHandler
-        }
-    }
-
-
-    //Connect Thread: Start a connection to the accept threat of a specific device
-    // If connection is established, return BEGIN connectThread otherwise, FAILURE
-    @SuppressLint("MissingPermission")
-    private inner class ConnectThread(btDevice: BluetoothDevice?):Thread(){
-        var btSocket: BluetoothSocket?
-        var device = btDevice
-
-        init{
-            var tmp: BluetoothSocket? = null
-            btAdapter?.cancelDiscovery()
-            try {
-                tmp = device?.createInsecureRfcommSocketToServiceRecord(MY_UUID)
-            } catch (e: IOException) {
-                Log.e(TAG, "Socket connect create() failed", e)
-            }
-
-            btSocket = tmp
-        }
-
-        override fun run() {
-            Log.i(TAG, "BEGIN connectThread")
-            btAdapter?.cancelDiscovery()
-
-            try {
-                btSocket?.connect()
-            } catch (e: IOException) {
-                Log.e(TAG, "FAILURE connect Thread",e)
-                // Close the socket
-                try {
-                    btSocket?.close()
-                } catch (e2: IOException) {
-                    Log.e(TAG, "unable to close() socket during connection failure", e2)
-                }
-
-                cancel()
-                return
-            }
-
-            manageConnectionThread = ManageConnectionThread(btSocket)
-            manageConnectionThread?.start()
-//            val testMessage = "This is a test"
-//            manageConnectionThread?.writeOut(testMessage.toByteArray())
-//            synchronized(this) {
-//                connectThread = null
-//            }
-        }
-
-        fun cancel(){
-            try {
-                btSocket?.close()
-            } catch (e: IOException) {
-                Log.e(TAG, "close() of connect socket failed", e)
-            }
-        }
-    }
-
-    // Manage Connection Thread: Manage connected thread, keep listening for new msg
-    private inner class ManageConnectionThread(socket: BluetoothSocket?):Thread(){
-        private val socket = socket
-        private var iStream: InputStream?
-        private var oStream: OutputStream?
-
-        init {
-
-            iStream = socket?.inputStream
-            oStream = socket?.outputStream
-        }
-
-        override fun run() {
-            val MAX_SIZE_SINGLE_MESSAGE = 1024
-            var messageReceived = ByteArray(MAX_SIZE_SINGLE_MESSAGE)
-            while(true)
-            {
-                try {
-                    Log.e(TAG, "run: ${messageReceived.toString(Charsets.UTF_8)}", )
-                    val test = "this is a test string"
-                    // TODO: Suck when trying to read messageReceived, uncomment below and add break pt to see
-                    iStream?.read(messageReceived,0,MAX_SIZE_SINGLE_MESSAGE)
-//                    iStream?.read(test.toByteArray())
-                }catch (e:IOException){
-                    Log.e(TAG, "run: ",e )
-                }
-                if(messageReceived[0].toInt() != 0)
-                {
-                    var charset = Charsets.UTF_8
-                    val messageString = messageReceived.toString(charset)
-                    // TODO: make a broadcast to notify DB
-                    val message = Message()
-                    message.msgBody = iStream.toString()
-                    message.status = "rcv"
-                    MainActivity.messageTest.insert(message)
-                    Log.e(TAG, "run: received $messageString" )
-                }
-            }
-        }
-
-        fun writeOut(message: ByteArray)
-        {
-            oStream?.write(message)
-        }
-
-        fun cancel() {
-            try {
-                socket?.close()
-            } catch (e: IOException) {
-                Log.e(TAG, "close() of connected socket failed", e)
-            }
         }
     }
 
