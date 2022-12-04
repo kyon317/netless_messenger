@@ -3,6 +3,7 @@ package com.example.netless_messenger
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
+import android.util.Range
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -32,38 +33,19 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_list)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
-
         val uName = intent.getStringExtra("userName").toString()
-
-        //Temp structure
-        val tempMessageList = ArrayList<Message>()
 
         supportActionBar?.title = uName
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         initDatabase()
-        getReceivedMessage()
 
         commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
             messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
             messageRecyclerView.scrollToPosition(it.size - 1)
         }
-//        for (message in commentViewModel.allCommentsLiveData.value!!){
-//            val historyList = ArrayList<Message>()
-//            historyList.add(message)
-//            messageRecyclerView.adapter = MessageViewAdapter(historyList)
-//        }
-
-        //Hide default action bar
-        //supportActionBar?.hide()
-
-        //Return to Main Activity if backArrow is pressed
-        //menuTitle.text = uName
-        //backArrow.setOnClickListener {
-            //finish()
-        //}
 
         sendButton.setOnClickListener{
             entry.status = Global.STATUS[1] //status = "snd"

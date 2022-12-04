@@ -31,6 +31,8 @@ class MessageViewAdapter(private val messageList: ArrayList<Message>): RecyclerV
         //TODO: Deal with user ID stuff
         //TODO: Implement user timeStamp conversion to string
 
+        holder.setIsRecyclable(false)
+
         val currMessage = messageList[position]
 
         val send_group = holder.itemView.findViewById<RelativeLayout>(R.id.send_group)
