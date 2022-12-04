@@ -29,6 +29,7 @@ class MessageViewAdapter(private val messageList: ArrayList<Message>): RecyclerV
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         //TODO: Deal with user ID stuff
+        //TODO: Implement user timeStamp conversion to string
 
         val currMessage = messageList[position]
 

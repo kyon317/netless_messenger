@@ -43,10 +43,12 @@ class ChatActivity: AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         initDatabase()
+        getReceivedMessage()
 
         commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
             messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
+            messageRecyclerView.scrollToPosition(it.size - 1)
         }
 //        for (message in commentViewModel.allCommentsLiveData.value!!){
 //            val historyList = ArrayList<Message>()
@@ -63,7 +65,6 @@ class ChatActivity: AppCompatActivity() {
             //finish()
         //}
 
-        //TEMP FEATURE
         sendButton.setOnClickListener{
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
@@ -72,11 +73,8 @@ class ChatActivity: AppCompatActivity() {
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
-                tempMessageList.add(entry)
-//                messageRecyclerView.adapter = MessageViewAdapter(tempMessageList)
                 setMessage(entry)
                 editText.setText("")
-                messageRecyclerView.scrollToPosition(tempMessageList.size - 1)
             }
         }
 
@@ -101,5 +99,12 @@ class ChatActivity: AppCompatActivity() {
         Log.e(TAG, "message inserted")
 //        val allMessage = commentViewModel.allCommentsLiveData
 //        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+    }
+
+    private fun getReceivedMessage() {
+        val btInstance = BT_Test(this, this.applicationContext, BT_TestViewModel())
+        commentViewModel.insert(btInstance.getMessage())
+        Log.e(TAG, "message received")
+
     }
 }

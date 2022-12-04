@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
 import android.widget.Toast
+import com.example.netless_messenger.database.Message
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -26,7 +27,8 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
     private var connectThread: ConnectThread? = null
     private var acceptThread: AcceptThread? = null
     private var manageConnectionThread: ManageConnectionThread? = null
-    private lateinit var testingMessage: String
+    private var message = Message()
+    private var testingMessage: String = ""
 
     private val  TAG: String = "BT_TEST"
 
@@ -181,7 +183,10 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
                 {
                     var charset = Charsets.UTF_8
                     val messageAsString = messageReceived.toString(charset)
-                    testingMessage = messageAsString
+                    message.userID = "1"
+                    message.status = "rcv"
+                    message.timeStamp = System.currentTimeMillis() / 1000
+                    message.msgBody = messageAsString
                     activity.runOnUiThread(Runnable {
                         Toast.makeText(activity,"$messageAsString", Toast.LENGTH_LONG).show()
                         tempBool = false
@@ -213,8 +218,14 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         }
     }
 
-    fun getMessage(): String {
-        return testingMessage
+    fun getMessage(): Message {
+        //Placeholder
+        message.userID = "1"
+        message.status = "rcv"
+        message.timeStamp = System.currentTimeMillis() / 1000
+        message.msgBody = "Testing Testing!"
+
+        return message
     }
 
 }
