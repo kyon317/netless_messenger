@@ -147,8 +147,8 @@ class BluetoothServices:Service() {
 //            })
             Log.e(TAG, "Socket accept() succeeded")
 
-//            manageConnectionThread = ManageConnectionThread(socket)
-//            manageConnectionThread?.start()
+            manageConnectionThread = ManageConnectionThread(socket)
+            manageConnectionThread?.start()
 //            val testMessage = "This is a test"
 //            manageConnectionThread?.writeOut(testMessage.toByteArray())
         }

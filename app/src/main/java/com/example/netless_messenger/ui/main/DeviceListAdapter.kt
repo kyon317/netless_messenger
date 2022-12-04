@@ -13,8 +13,9 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.*
 
-class DeviceListAdapter(private val context: Context, private val deviceNameList: ArrayList<BluetoothDevice>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class DeviceListAdapter(private val _context: Context, private val deviceNameList: ArrayList<BluetoothDevice>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
+    val context : Context = _context.applicationContext
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewAdapter.MyViewHolder {
         val deviceListView = LayoutInflater.from(parent.context).inflate(
             R.layout.device_list_single,
@@ -55,7 +56,7 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
         val bluetoothServicesIntent = Intent(context,BluetoothServices::class.java)
         bluetoothServicesIntent.putExtra("Device",targetDevice)
         context.startService(bluetoothServicesIntent)
-        context.applicationContext.bindService(bluetoothServicesIntent,
+        context.bindService(bluetoothServicesIntent,
             MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
 
     }
@@ -64,7 +65,7 @@ class DeviceListAdapter(private val context: Context, private val deviceNameList
         val connectionServicesIntent = Intent(context,ConnectionService::class.java)
         connectionServicesIntent.putExtra("Device",targetDevice)
         context.startService(connectionServicesIntent)
-        context.applicationContext.bindService(connectionServicesIntent,
+        context.bindService(connectionServicesIntent,
             MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
 
     }
