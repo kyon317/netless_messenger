@@ -1,6 +1,7 @@
 package com.example.netless_messenger
 
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
@@ -11,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.*
 import com.example.netless_messenger.ui.main.MessageViewAdapter
-import kotlin.math.log
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
@@ -63,6 +63,7 @@ class ChatActivity: AppCompatActivity() {
             if(entry.msgBody != ""){
                 setMessage(entry)
                 editText.setText("")
+//                sendMessage(entry)
             }
         }
 
@@ -89,10 +90,13 @@ class ChatActivity: AppCompatActivity() {
         Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 
-    private fun getReceivedMessage() {
-        val btInstance = BT_Test(this, this.applicationContext, BT_TestViewModel())
-        messageTest.insert(btInstance.getMessage())
-        Log.e(TAG, "message received")
 
+
+
+    private fun sendMessage(snd_msg : Message){
+        val msgIntent = Intent()
+        msgIntent.action = "SENDMSG"
+        msgIntent.putExtra("msgBody", snd_msg.msgBody)
+        sendBroadcast(msgIntent)
     }
 }

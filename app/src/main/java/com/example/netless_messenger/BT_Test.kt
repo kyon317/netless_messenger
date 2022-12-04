@@ -28,15 +28,17 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
     private var acceptThread: AcceptThread? = null
     private var manageConnectionThread: ManageConnectionThread? = null
     private var message = Message()
-    private var testingMessage: String = ""
+    private var testMessage:String = ""
+    private val TAG: String = "BT_TEST"
 
-    private val  TAG: String = "BT_TEST"
+    fun setTestMessage(snd_string : String) {
+        testMessage = snd_string
+    }
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     private val btReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
-
             if (BluetoothDevice.ACTION_FOUND == action) {
                 val btDevice = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                 btViewModel.updateAvailableDevices(btDevice)
@@ -44,10 +46,22 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         }
     }
 
+    // Create a message body receiver
+    private val msgReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val msgBody = intent.getStringExtra("msgBody")
+            if (msgBody != null) {
+                setTestMessage(msgBody)
+            }
+        }
+    }
+
     init {
         // Register for broadcasts when a device is discovered.
-        var filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
         context.registerReceiver(btReceiver, filter)
+        val msgFilter = IntentFilter("SENDMSG")
+        context.registerReceiver(msgReceiver, msgFilter)
 
         btManager = context?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
         btAdapter = btManager?.adapter
@@ -93,7 +107,7 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
 
             manageConnectionThread = ManageConnectionThread(socket)
             manageConnectionThread?.start()
-            val testMessage = "This is a test"
+//            val testMessage = "This is a test"
             manageConnectionThread?.writeOut(testMessage.toByteArray())
         }
 
@@ -162,7 +176,7 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         }
     }
 
-    private inner class ManageConnectionThread(socket: BluetoothSocket?):Thread(){
+    inner class ManageConnectionThread(socket: BluetoothSocket?):Thread(){
         private val socket = socket
         private var iStream: InputStream?
         private var oStream: OutputStream?
@@ -221,14 +235,5 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         }
     }
 
-    fun getMessage(): Message {
-        //Placeholder
-        message.userID = "1"
-        message.status = "rcv"
-        message.timeStamp = System.currentTimeMillis() / 1000
-        message.msgBody = "Testing Testing!"
-
-        return message
-    }
 
 }
