@@ -1,10 +1,12 @@
 package com.example.netless_messenger.database
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,7 @@ class MessageTestViewModel(application: Application): AndroidViewModel(applicati
             return allCommentsLiveData.value?.get(index)
         return null
     }
+
 
 }
 

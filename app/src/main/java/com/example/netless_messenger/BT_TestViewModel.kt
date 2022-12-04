@@ -10,9 +10,11 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.netless_messenger.database.*
 
 class BT_TestViewModel: ViewModel() {
+
 
     var availableDevices = MutableLiveData<ArrayList<BluetoothDevice>>()
     var isConnected = MutableLiveData<Boolean>(false)
@@ -27,16 +29,9 @@ class BT_TestViewModel: ViewModel() {
     }
 
     // Set up message from received message
-//    fun messageSetter(rcv_msg : Message){
-//
-//        this.message.msgType = rcv_msg.msgType
-//        this.message.msgBody = rcv_msg.msgBody
-//        this.message.id  = rcv_msg.id
-//        this.message.status = rcv_msg.status
-//        this.message.timeStamp = rcv_msg.timeStamp
-//        this.message.userID = rcv_msg.userID
-//        _dynamic_msg.value = message
-//    }
+    fun messageSetter(rcv_msg : Message){
+        MainActivity.messageTest.insert(rcv_msg)
+    }
 
     // return current message
 //    fun messageGetter():Message{

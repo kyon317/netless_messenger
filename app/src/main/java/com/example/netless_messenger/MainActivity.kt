@@ -10,12 +10,16 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
+//    private lateinit var messageTest: MessageTestViewModel
 
     companion object {
         lateinit var backArrow: ImageView
+        lateinit var messageTest: MessageTestViewModel
     }
 
     override fun onCreate(savedInstanceState : Bundle?) {
@@ -36,6 +40,9 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+
+        // initialize Database
+        messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
 
         //To debug ChatActivity.kt
 //        val intent = Intent(this, ChatActivity::class.java)

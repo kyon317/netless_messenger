@@ -188,8 +188,8 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
                     message.status = "rcv"
                     message.timeStamp = System.currentTimeMillis() / 1000
                     message.msgBody = messageAsString
-//                    val  btViewModel = BT_TestViewModel()
-//                    btViewModel.messageSetter(message)
+                    val  btViewModel = BT_TestViewModel()
+                    btViewModel.messageSetter(message)
                     activity.runOnUiThread(Runnable {
                         Toast.makeText(activity,"$messageAsString", Toast.LENGTH_LONG).show()
                         tempBool = false

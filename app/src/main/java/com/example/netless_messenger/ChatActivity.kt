@@ -15,11 +15,11 @@ import kotlin.math.log
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
-    private lateinit var database: MessageDatabase
-    private lateinit var databaseDao: MessageDatabaseDao
-    private lateinit var repository: MessageRepository
-    private lateinit var viewModelFactory: MessageViewModelFactory
-    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
+//    private lateinit var database: MessageDatabase
+//    private lateinit var databaseDao: MessageDatabaseDao
+//    private lateinit var repository: MessageRepository
+//    private lateinit var viewModelFactory: MessageViewModelFactory
+//    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
 
     private lateinit var messageTest: MessageTestViewModel
 
@@ -73,14 +73,14 @@ class ChatActivity: AppCompatActivity() {
         return true
     }
 
-    private fun initDatabase() {
-        database = MessageDatabase.getInstance(this)
-        databaseDao = database.MessageDatabaseDao
-        repository = MessageRepository(databaseDao)
-        viewModelFactory = MessageViewModelFactory(repository)
-        commentViewModel = ViewModelProvider(this, viewModelFactory).get(
-            MessageViewModel.CommentViewModel::class.java)
-    }
+//    private fun initDatabase() {
+//        database = MessageDatabase.getInstance(this)
+//        databaseDao = database.MessageDatabaseDao
+//        repository = MessageRepository(databaseDao)
+//        viewModelFactory = MessageViewModelFactory(repository)
+//        commentViewModel = ViewModelProvider(this, viewModelFactory).get(
+//            MessageViewModel.CommentViewModel::class.java)
+//    }
 
     private fun setMessage(message: Message) {
         messageTest.insert(message)
@@ -91,7 +91,7 @@ class ChatActivity: AppCompatActivity() {
 
     private fun getReceivedMessage() {
         val btInstance = BT_Test(this, this.applicationContext, BT_TestViewModel())
-        commentViewModel.insert(btInstance.getMessage())
+        messageTest.insert(btInstance.getMessage())
         Log.e(TAG, "message received")
 
     }

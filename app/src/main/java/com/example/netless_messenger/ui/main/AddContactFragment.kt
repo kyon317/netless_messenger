@@ -20,8 +20,10 @@ import com.example.netless_messenger.BT_Test
 import com.example.netless_messenger.BT_TestViewModel
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
+import com.example.netless_messenger.database.MessageTestViewModel
 
 class AddContactFragment: Fragment() {
+
 
     private lateinit var addContactTextView: TextView
     private lateinit var deviceListView: View
@@ -29,6 +31,7 @@ class AddContactFragment: Fragment() {
     private lateinit var btViewModel: BT_TestViewModel
     private lateinit var btInstance: BT_Test
     private lateinit var discoverySwitch: Switch
+
     companion object{
         const val RESULT_OK = 90
     }
@@ -49,6 +52,9 @@ class AddContactFragment: Fragment() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+
+
+
 
 
         discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)
