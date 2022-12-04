@@ -45,8 +45,14 @@ class ChatActivity: AppCompatActivity() {
         initDatabase()
 
         commentViewModel.allCommentsLiveData.observe(this) {
-
+            // show send message history
+            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
         }
+//        for (message in commentViewModel.allCommentsLiveData.value!!){
+//            val historyList = ArrayList<Message>()
+//            historyList.add(message)
+//            messageRecyclerView.adapter = MessageViewAdapter(historyList)
+//        }
 
         //Hide default action bar
         //supportActionBar?.hide()
