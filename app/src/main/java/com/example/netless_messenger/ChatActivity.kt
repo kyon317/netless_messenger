@@ -21,6 +21,8 @@ class ChatActivity: AppCompatActivity() {
     private lateinit var viewModelFactory: MessageViewModelFactory
     private lateinit var commentViewModel: MessageViewModel.CommentViewModel
 
+    private lateinit var messageTest: MessageTestViewModel
+
     private lateinit var editText: EditText
     private lateinit var sendButton: ImageView
     private lateinit var messageRecyclerView: RecyclerView
@@ -33,16 +35,19 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_list)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
+
         val uName = intent.getStringExtra("userName").toString()
 
         supportActionBar?.title = uName
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        initDatabase()
+        //initDatabase()
 
+        messageTest.allCommentsLiveData.observe(this) {
 
-        commentViewModel.allCommentsLiveData.observe(this) {
+        //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
             messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
             messageRecyclerView.scrollToPosition(it.size - 1)
@@ -78,10 +83,10 @@ class ChatActivity: AppCompatActivity() {
     }
 
     private fun setMessage(message: Message) {
-        commentViewModel.insert(message)
+        messageTest.insert(message)
         Log.e(TAG, "message inserted")
-//        val allMessage = commentViewModel.allCommentsLiveData
-//        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+        val allMessage = messageTest.allCommentsLiveData
+        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 
     private fun getReceivedMessage() {
