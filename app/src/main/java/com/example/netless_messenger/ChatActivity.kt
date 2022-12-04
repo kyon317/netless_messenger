@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.*
 import com.example.netless_messenger.ui.main.MessageViewAdapter
+import kotlin.math.log
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
@@ -34,14 +35,9 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_list)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        //TESTING
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
 
-
         val uName = intent.getStringExtra("userName").toString()
-
-        //Temp structure
-        val tempMessageList = ArrayList<Message>()
 
         supportActionBar?.title = uName
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -51,18 +47,12 @@ class ChatActivity: AppCompatActivity() {
 
         messageTest.allCommentsLiveData.observe(this) {
 
+        //commentViewModel.allCommentsLiveData.observe(this) {
+            // show send message history
+            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
+            messageRecyclerView.scrollToPosition(it.size - 1)
         }
 
-        //Hide default action bar
-        //supportActionBar?.hide()
-
-        //Return to Main Activity if backArrow is pressed
-        //menuTitle.text = uName
-        //backArrow.setOnClickListener {
-            //finish()
-        //}
-
-        //TEMP FEATURE
         sendButton.setOnClickListener{
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
@@ -71,11 +61,8 @@ class ChatActivity: AppCompatActivity() {
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
-                tempMessageList.add(entry)
-                messageRecyclerView.adapter = MessageViewAdapter(tempMessageList)
                 setMessage(entry)
                 editText.setText("")
-                messageRecyclerView.scrollToPosition(tempMessageList.size - 1)
             }
         }
 
@@ -100,5 +87,12 @@ class ChatActivity: AppCompatActivity() {
         Log.e(TAG, "message inserted")
         val allMessage = messageTest.allCommentsLiveData
         Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+    }
+
+    private fun getReceivedMessage() {
+        val btInstance = BT_Test(this, this.applicationContext, BT_TestViewModel())
+        commentViewModel.insert(btInstance.getMessage())
+        Log.e(TAG, "message received")
+
     }
 }

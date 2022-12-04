@@ -50,7 +50,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/text_box_input"
-        tools:listitem="@layout/message_element_send_recieve"
-        tools:itemCount="20"/>
+        tools:listitem="@layout/message_element_send_recieve"/>
 
 </RelativeLayout>

@@ -7,10 +7,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.netless_messenger.database.*
 
 class BT_TestViewModel: ViewModel() {
+
     var availableDevices = MutableLiveData<ArrayList<BluetoothDevice>>()
     var isConnected = MutableLiveData<Boolean>(false)
 
@@ -22,6 +25,24 @@ class BT_TestViewModel: ViewModel() {
             availableDevices.value = deviceArrayList
         }
     }
+
+    // Set up message from received message
+//    fun messageSetter(rcv_msg : Message){
+//
+//        this.message.msgType = rcv_msg.msgType
+//        this.message.msgBody = rcv_msg.msgBody
+//        this.message.id  = rcv_msg.id
+//        this.message.status = rcv_msg.status
+//        this.message.timeStamp = rcv_msg.timeStamp
+//        this.message.userID = rcv_msg.userID
+//        _dynamic_msg.value = message
+//    }
+
+    // return current message
+//    fun messageGetter():Message{
+////        initDatabase()
+//        return message
+//    }
 
     fun clearAvailableDevices(){
         availableDevices.value?.clear()
@@ -60,4 +81,6 @@ class BT_TestViewModel: ViewModel() {
         }
         return null
     }
+
+
 }
