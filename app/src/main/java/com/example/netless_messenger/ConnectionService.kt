@@ -35,6 +35,8 @@ class ConnectionService() : Service() {
     private var bluetoothSocket : BluetoothSocket?=null
     var isBlueConnected: Boolean = false
     private val ENCODING_FORMAT = "GBK"
+    private val TAG = "ConnectionService"
+
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
@@ -52,8 +54,6 @@ class ConnectionService() : Service() {
     override fun onStartCommand(intent : Intent?, flags : Int, startId : Int) : Int {
         if (intent != null) {
             btDevice = intent.getParcelableExtra<BluetoothDevice>("Device")!!
-            bluetoothSocket = btDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID)
-            funStartBlueClientConnect()
             funBlueClientStartReceive()
         }
         return START_STICKY
@@ -61,27 +61,13 @@ class ConnectionService() : Service() {
 
     private val msgReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val msgBody = intent.getStringExtra("msgBody")
-            if (msgBody != null) {
-                funBlueClientSend(msgBody)
-            }
-        }
-    }
-
-    // start Blue tooth client
-    @SuppressLint("MissingPermission")
-    private fun funStartBlueClientConnect() {
-        thread {
-            try {
-                // will block if runs in main thread
-                if (bluetoothSocket == null || !isBlueConnected) {
-                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery()
-                    bluetoothSocket!!.connect()
-                    isBlueConnected = true
+            if(intent.action == "SENDMSG")
+            {
+                val msgBody = intent.getStringExtra("msgBody")
+                Log.e(TAG,"Testing $msgBody")
+                if (msgBody != null) {
+                    funBlueClientSend(msgBody)
                 }
-            } catch (e: IOException) {
-                // handle exception
-                e.printStackTrace()
             }
         }
     }
@@ -93,7 +79,7 @@ class ConnectionService() : Service() {
                 try {
                     if (bluetoothSocket != null) {
                         if (bluetoothSocket!!.isConnected) {
-                            Log.e("eee", "Connection available")
+                            Log.e(TAG, "Connection available")
                             receiveMessage()
                         }
                     }
@@ -118,6 +104,10 @@ class ConnectionService() : Service() {
                 Log.d(TAG, "Input stream was disconnected", e)
                 break
             }
+            if(mmBuffer[0].toInt() != 0)
+            {
+                Log.d(TAG, "$mmBuffer")
+            }
 
             // TODO: it is able to send message but won't receive any
             val message = android.os.Message()
@@ -138,7 +128,7 @@ class ConnectionService() : Service() {
 
     // send message via bluetooth
     private fun funBlueClientSend(input: String) {
-        if (bluetoothSocket != null && isBlueConnected) {
+        if (bluetoothSocket != null) {
             try {
                 bluetoothSocket!!.outputStream.write(input.toByteArray(Charset.forName(ENCODING_FORMAT)))
                 Log.e(TAG, "funBlueClientSend: ${input}", )

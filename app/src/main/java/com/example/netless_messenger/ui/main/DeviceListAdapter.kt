@@ -38,8 +38,12 @@ class DeviceListAdapter(private val _context: Context, private val deviceNameLis
         // TODO: start connection when clicked on a device
         curView.setOnClickListener(){
             if (cur.name!=null) {
-                startBluetoothServices(cur)
-                startConnectionServices(cur)
+                //startBluetoothServices(cur)
+                //startConnectionServices(cur)
+                val msgIntent = Intent()
+                msgIntent.action = "ATTEMPT_CONNECTION"
+                msgIntent.putExtra("SELECTED_DEVICE",cur)
+                context.sendBroadcast(msgIntent)
             }
 //            val btInstance = fragment.getBtInstance()
 //            val device = fragment.getBtViewModel().retrieveDevice(cur)
