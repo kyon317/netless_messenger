@@ -41,10 +41,6 @@ class ChatActivity: AppCompatActivity() {
 
         initDatabase()
 
-        val  btViewModel = BT_TestViewModel()
-        btViewModel.dynamic_msg.observe(this){
-            Log.e(TAG, "onCreate: ${it.msgBody}" )
-        }
 
         commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
