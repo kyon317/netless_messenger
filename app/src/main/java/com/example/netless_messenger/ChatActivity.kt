@@ -64,7 +64,7 @@ class ChatActivity: AppCompatActivity() {
             if(entry.msgBody != ""){
                 setMessage(entry)
                 editText.setText("")
-//                sendMessage(entry)
+                sendMessage(entry)
             }
         }
 
@@ -88,7 +88,7 @@ class ChatActivity: AppCompatActivity() {
         messageTest.insert(message)
         Log.e(TAG, "message inserted")
         val allMessage = messageTest.allCommentsLiveData
-        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+//        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 
 

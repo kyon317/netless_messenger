@@ -46,9 +46,7 @@ class BluetoothServices:Service() {
         // Register for broadcasts when a device is discovered.
         val broadcastFilter = IntentFilter(BluetoothDevice.ACTION_FOUND)
         this.applicationContext.registerReceiver(btReceiver, broadcastFilter)
-        // Register for broadcasts when a msg is sent.
-        val msgFilter = IntentFilter("SENDMSG")
-        this.applicationContext.registerReceiver(msgReceiver, msgFilter)
+
 
         btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
         btAdapter = btManager?.adapter
@@ -93,15 +91,7 @@ class BluetoothServices:Service() {
         }
     }
 
-    // TODO: Create a message body receiver
-    private val msgReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val msgBody = intent.getStringExtra("msgBody")
-            if (msgBody != null) {
-//                setTestMessage(msgBody)
-            }
-        }
-    }
+
 
     override fun onBind(intent : Intent?) : IBinder? {
         Log.e(TAG, "onBind: debug: Service onBind() called")
@@ -126,6 +116,7 @@ class BluetoothServices:Service() {
 
     }
 
+
     // Accept Thread: Accept on connection, keep listening for a bluetooth connection
     @SuppressLint("MissingPermission")
     private inner class AcceptThread():Thread(){
@@ -143,7 +134,7 @@ class BluetoothServices:Service() {
         }
 
         override fun run() {
-            Log.e(TAG, "Socket Type: BEGIN accept Thread" + this)
+            Log.e(TAG, "Socket Type: Start accept Thread" + this)
             var socket: BluetoothSocket? = null
 
             try{
@@ -156,8 +147,8 @@ class BluetoothServices:Service() {
 //            })
             Log.e(TAG, "Socket accept() succeeded")
 
-            manageConnectionThread = ManageConnectionThread(socket)
-            manageConnectionThread?.start()
+//            manageConnectionThread = ManageConnectionThread(socket)
+//            manageConnectionThread?.start()
 //            val testMessage = "This is a test"
 //            manageConnectionThread?.writeOut(testMessage.toByteArray())
         }
