@@ -3,7 +3,6 @@ package com.example.netless_messenger
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
-import android.util.Range
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.*
 import com.example.netless_messenger.ui.main.MessageViewAdapter
+import kotlin.math.log
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
@@ -40,6 +40,11 @@ class ChatActivity: AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         initDatabase()
+
+        val  btViewModel = BT_TestViewModel()
+        btViewModel.dynamic_msg.observe(this){
+            Log.e(TAG, "onCreate: ${it.msgBody}" )
+        }
 
         commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history

@@ -78,7 +78,7 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
         }
 
         override fun run() {
-            Log.d(TAG, "Socket Type: BEGIN acceptThread" + this)
+            Log.d(TAG, "Socket Type: BEGIN accept Thread" + this)
             var socket:BluetoothSocket? = null
 
             try{
@@ -93,7 +93,7 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
 
             manageConnectionThread = ManageConnectionThread(socket)
             manageConnectionThread?.start()
-            val testMessage = "Testing! Testing!"
+            val testMessage = "This is a test"
             manageConnectionThread?.writeOut(testMessage.toByteArray())
         }
 
@@ -183,10 +183,13 @@ class BT_Test(activity: Activity, context: Context, btViewModel: BT_TestViewMode
                 {
                     var charset = Charsets.UTF_8
                     val messageAsString = messageReceived.toString(charset)
+                    // TODO: update view model with message received
                     message.userID = "1"
                     message.status = "rcv"
                     message.timeStamp = System.currentTimeMillis() / 1000
                     message.msgBody = messageAsString
+//                    val  btViewModel = BT_TestViewModel()
+//                    btViewModel.messageSetter(message)
                     activity.runOnUiThread(Runnable {
                         Toast.makeText(activity,"$messageAsString", Toast.LENGTH_LONG).show()
                         tempBool = false
