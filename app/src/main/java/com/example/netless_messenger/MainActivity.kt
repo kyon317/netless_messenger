@@ -58,15 +58,15 @@ class MainActivity : AppCompatActivity() {
     // start bluetooth services
     private fun startServices(){
         val connectionServicesIntent = Intent(this,ConnectionService::class.java)
-        this.startService(connectionServicesIntent)
-        applicationContext.bindService(connectionServicesIntent,
-            MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
+        startService(connectionServicesIntent)
+        applicationContext.bindService(connectionServicesIntent, chatViewModel, Context.BIND_AUTO_CREATE)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        val deviceViewModel = DeviceViewModel()
-        this.applicationContext.unbindService(deviceViewModel)
+        val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+        stopService(connectionServicesIntent)
+        applicationContext.unbindService(chatViewModel)
     }
     private fun checkPermission() {
         if (Build.VERSION.SDK_INT < 23) return

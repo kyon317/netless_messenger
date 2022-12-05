@@ -83,12 +83,6 @@ class AddContactFragment: Fragment() {
             deviceListDialog.dismiss()
         }
 
-        //When dialog is dismissed, stop service
-        deviceListDialog.setOnDismissListener {
-            requireActivity().stopService(bluetoothServicesIntent)
-            requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
-        }
-
         val deviceDialogRecyclerView = deviceListView.findViewById<RecyclerView>(R.id.deviceDialogRecyclerView)
         deviceDialogRecyclerView.layoutManager = LinearLayoutManager(activity)
         // initialize DeviceListAdapter
@@ -98,12 +92,16 @@ class AddContactFragment: Fragment() {
             deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), it)
         })
 
-
         //Build the custom alert dialog
         val builder = AlertDialog.Builder(activity)
         builder.setView(deviceListView)
         deviceListDialog = builder.create()
 
+        //When dialog is dismissed, stop service
+        deviceListDialog.setOnDismissListener {
+            requireActivity().stopService(bluetoothServicesIntent)
+            requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
+        }
 
         return addContactFragmentView
     }
@@ -144,9 +142,4 @@ class AddContactFragment: Fragment() {
 //        if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
 //        else discoverySwitch.isChecked = false
 //    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
-    }
 }
