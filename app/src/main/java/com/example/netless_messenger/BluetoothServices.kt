@@ -91,64 +91,11 @@ class BluetoothServices:Service() {
         msgHandler = null
         return true
     }
-
-    //
+    
     inner class MyBinder : Binder() {
         fun setmsgHandler(msgHandler: Handler) {
             this@BluetoothServices.msgHandler = msgHandler
         }
     }
-
-    // TODO: send received msg to database
-    private fun sendMsg(){
-
-    }
-
-    //TODO: Double check logic
-    // Manage Connection Thread: Manage connected thread, keep listening for new msg
-    private inner class ManageConnectionThread(socket: BluetoothSocket?):Thread(){
-        private val socket = socket
-        private var iStream: InputStream?
-        private var oStream: OutputStream?
-
-        init {
-            iStream = socket?.inputStream
-            oStream = socket?.outputStream
-        }
-
-        override fun run() {
-            val MAX_SIZE_SINGLE_MESSAGE = 1024
-            var messageReceived = ByteArray(MAX_SIZE_SINGLE_MESSAGE)
-            while(true)
-            {
-                try {
-                    iStream?.read(messageReceived)
-                }catch (e:IOException){
-                    Log.e(TAG, "run: ", )
-                }
-                if(messageReceived[0].toInt() != 0)
-                {
-                    var charset = Charsets.UTF_8
-                    val messageString = messageReceived.toString(charset)
-                    // TODO: make a broadcast to notify DB
-
-                }
-            }
-        }
-
-        fun writeOut(message: ByteArray)
-        {
-            oStream?.write(message)
-        }
-
-        fun cancel() {
-            try {
-                socket?.close()
-            } catch (e: IOException) {
-                Log.e(TAG, "close() of connected socket failed", e)
-            }
-        }
-    }
-
 
 }
