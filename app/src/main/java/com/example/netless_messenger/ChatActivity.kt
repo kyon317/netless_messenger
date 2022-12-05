@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,13 @@ class ChatActivity: AppCompatActivity() {
     private lateinit var sendButton: ImageView
     private lateinit var messageRecyclerView: RecyclerView
 
+    //Custom AppBar Elements
+    private lateinit var back_button: ImageView
+    private lateinit var reset_connection_button: ImageView
+    private lateinit var display_image: ImageView
+    private lateinit var status: TextView
+    private lateinit var user_name_appbar: TextView
+
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.chat_activity_layout)
@@ -37,18 +45,39 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_list)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        //Custom AppBar
+        back_button = findViewById(R.id.back_arrow_icon)
+        reset_connection_button = findViewById(R.id.reset_bttn)
+        display_image = findViewById(R.id.chat_profile_image)
+        status = findViewById(R.id.status)
+        user_name_appbar = findViewById(R.id.chat_user_name)
+
+
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
         val chatViewModel = MainActivity.chatViewModel
         chatViewModel.currentMessageList.observe(this, Observer {
             Log.e(TAG, "onCreate: current message list size is ${it.size}" )
         })
+
+        //ActionBar operations
         val uName = intent.getStringExtra("userName").toString()
 
-        supportActionBar?.title = uName
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        //Hide Action Bar
+        supportActionBar?.hide()
 
-        //initDatabase()
+        //Set user name as title
+        user_name_appbar.text = uName
+
+        //Back Button Action
+        back_button.setOnClickListener(){
+            finish()
+        }
+
+        //Reset Button Action
+        reset_connection_button.setOnClickListener(){
+
+        }
+
 
         messageTest.allCommentsLiveData.observe(this) {
 
@@ -74,10 +103,6 @@ class ChatActivity: AppCompatActivity() {
 
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
-    }
 
 //    private fun initDatabase() {
 //        database = MessageDatabase.getInstance(this)

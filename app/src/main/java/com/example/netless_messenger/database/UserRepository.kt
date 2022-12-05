@@ -8,24 +8,19 @@ import kotlinx.coroutines.launch
 
 /* UserRepository - Repository for view model to access and store database*/
 class UserRepository(private val userDatabaseDao : UserDatabaseDao) {
+    //TODO: Refactor Val to allUsers
     val allComments: Flow<List<User>> = userDatabaseDao.getAllEntries()
 
-    fun insert(user: User){
-        CoroutineScope(Dispatchers.IO).launch{
+    suspend fun insert(user: User){
             userDatabaseDao.insertEntry(user)
-        }
     }
 
-    fun delete(id: Long){
-        CoroutineScope(Dispatchers.IO).launch {
+    suspend fun delete(id: Long){
             userDatabaseDao.deleteComment(id)
-        }
     }
 
-    fun deleteAll(){
-        CoroutineScope(Dispatchers.IO).launch {
+    suspend fun deleteAll(){
             userDatabaseDao.deleteAll()
-        }
     }
 
 }

@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 
 /* UserViewModel - A view model that operates on ExerciseEntryRepository*/
 class MessageViewModel(private val repository: MessageRepository) : ViewModel() {
-
+    //TODO: Redundant code - Remove File
     class CommentViewModel(private val repository: MessageRepository) : ViewModel() {
         val allCommentsLiveData: LiveData<List<Message>> = repository.allComments.asLiveData()
 

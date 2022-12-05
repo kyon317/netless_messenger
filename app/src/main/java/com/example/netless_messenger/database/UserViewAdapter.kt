@@ -10,6 +10,7 @@ import com.example.netless_messenger.R
 
 /* View adapter from User database entry */
 class UserViewAdapter (private val context: Context, private var entryList: List<User>):
+//TODO: Redundant code - Delete maybe
     BaseAdapter() {
     override fun getCount() : Int {
         return entryList.size
