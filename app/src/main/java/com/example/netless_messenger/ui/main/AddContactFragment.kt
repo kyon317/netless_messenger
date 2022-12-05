@@ -87,14 +87,13 @@ class AddContactFragment: Fragment() {
         deviceDialogRecyclerView.layoutManager = LinearLayoutManager(activity)
         // initialize DeviceListAdapter
         deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), ArrayList())
-
-        //To display custom view for when the recycler view is empty
-        val emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
-        deviceDialogRecyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
+        println("Dialog Recycler view size: ${deviceDialogRecyclerView.adapter!!.itemCount}")
+        var emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
 
         deviceViewmodel.availableDevices.observe(requireActivity(), Observer {
             deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), it)
-            deviceDialogRecyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
+            //To display custom view for when the recycler view is empty
+            emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
         })
 
         //Build the custom alert dialog
