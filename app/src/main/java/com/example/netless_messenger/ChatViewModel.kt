@@ -14,6 +14,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class ChatViewModel: ViewModel(), ServiceConnection {
+    //TODO: Chat activity should observe this flag; when set to false, service is not running.
+    // IT IS THE RESPONSIBILITY OF THE OBSERVER TO RESTART THE SERVICE IMMEDIATELY AND CALL
+    // resetFlag_isConnectionServiceRunning(). When the flag is reset, observer should ignore the
+    // flag when it is true.
+    // If the chat activity is not running when the service is terminated, it is the responsibility
+    // of the activity to query this flag at the earliest possible opportunity and restart the
+    // service if necessary.
     private var isConnectionServiceRunning = MutableLiveData<Boolean>()
     private var isConnectedToDevice = MutableLiveData<Boolean>()
     private var deviceName = MutableLiveData<String>()
@@ -34,10 +41,6 @@ class ChatViewModel: ViewModel(), ServiceConnection {
     //Live data observer ignores when this flag is true
     fun resetFlag_isConnectionServiceRunning(){
         isConnectionServiceRunning.value = true
-    }
-
-    fun resetFlag_isConnectedToDevice(){
-        isConnectedToDevice.value = false
     }
 
     fun getFlag_isConnectionServiceRunning() : Boolean{
@@ -76,6 +79,7 @@ class ChatViewModel: ViewModel(), ServiceConnection {
             }
             if (msg.what == ConnectionService.RESET_CONNECTION_SERVICE){
                 isConnectionServiceRunning.value = false
+                isConnectedToDevice.value = false;
             }
             if (msg.what == ConnectionService.CONNECTION_SUCCEEDED){
                 val bundle = msg.data
