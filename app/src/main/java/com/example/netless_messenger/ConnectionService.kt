@@ -21,6 +21,9 @@ import java.nio.charset.Charset
 import java.util.*
 import kotlin.concurrent.thread
 
+//TODO: Handle connection terminated
+//TODO: Restart bluetooth and connection service where needed
+
 class ConnectionService() : Service() {
     companion object  {
         const val MESSAGE_VALUE = 0
@@ -31,7 +34,7 @@ class ConnectionService() : Service() {
     private var btAdapter: BluetoothAdapter? = null
     private lateinit var myBinder:MyBinder
     private var MY_UUID = UUID.fromString("578fa54b-a381-466f-970c-9200436d9981")
-    private lateinit var btDevice : BluetoothDevice
+    private var btDevice : BluetoothDevice? = null
     private var bluetoothSocket : BluetoothSocket?=null
     var isBlueConnected: Boolean = false
     private val ENCODING_FORMAT = "GBK"
@@ -40,26 +43,26 @@ class ConnectionService() : Service() {
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-//        btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
-        btAdapter = BluetoothAdapter.getDefaultAdapter()
+        btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
+        btAdapter = btManager?.adapter
         myBinder = MyBinder()
 
         // Register for broadcasts when a msg is sent.
         val msgFilter = IntentFilter("SENDMSG")
-        this.applicationContext.registerReceiver(msgReceiver, msgFilter)
+        val attemptConnectionFilter = IntentFilter("ATTEMPT_CONNECTION")
+        this.applicationContext.registerReceiver(broadcastReceiver, msgFilter)
+        this.applicationContext.registerReceiver(broadcastReceiver, attemptConnectionFilter)
+
+        funStartListeningForConnection()
     }
 
 
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent : Intent?, flags : Int, startId : Int) : Int {
-        if (intent != null) {
-            btDevice = intent.getParcelableExtra<BluetoothDevice>("Device")!!
-            funBlueClientStartReceive()
-        }
         return START_STICKY
     }
 
-    private val msgReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if(intent.action == "SENDMSG")
             {
@@ -68,6 +71,73 @@ class ConnectionService() : Service() {
                 if (msgBody != null) {
                     funBlueClientSend(msgBody)
                 }
+            }
+            else if(intent.action == "ATTEMPT_CONNECTION")
+            {
+                btDevice = intent.getParcelableExtra<BluetoothDevice>("SELECTED_DEVICE")!!
+                funStartBlueClientConnect()
+            }
+        }
+    }
+
+    // start Blue tooth client
+    @SuppressLint("MissingPermission")
+    private fun funStartBlueClientConnect() {
+        Log.e(TAG,"Testing2")
+        thread {
+            bluetoothSocket = btDevice?.createInsecureRfcommSocketToServiceRecord(MY_UUID)
+            try {
+                // will block if runs in main thread
+                if (bluetoothSocket != null || !isBlueConnected) {
+                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery()
+                    bluetoothSocket!!.connect()
+                    Log.e(TAG, "Connected")
+                    isBlueConnected = true
+
+                    funBlueClientStartReceive()
+                }
+            } catch (e: IOException) {
+                // handle exception
+                e.printStackTrace()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun funStartListeningForConnection(){
+        thread {
+            var btServerSocket: BluetoothServerSocket?
+            var tmp: BluetoothServerSocket? = null
+            try {
+                tmp = btAdapter?.listenUsingInsecureRfcommWithServiceRecord(TAG, MY_UUID)
+            } catch (e: IOException) {
+                Log.e(TAG, "Socket listen() failed", e)
+            }
+            btServerSocket = tmp
+
+            Log.e(TAG, "Socket Type: Start accept Thread" + this)
+
+            try{
+                bluetoothSocket = btServerSocket?.accept()
+            } catch (e: IOException) {
+                Log.e(TAG, "Socket accept() failed", e)
+            }
+//            activity.runOnUiThread(Runnable {
+//                Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
+//            })
+            Log.e(TAG, "Socket accept() succeeded")
+            isBlueConnected = true
+
+            btDevice = bluetoothSocket?.remoteDevice
+
+
+            funBlueClientStartReceive()
+
+            //Close server socket because we have bluetooth socket and don't need it anymore
+            try {
+                btServerSocket?.close()
+            } catch (e: IOException) {
+                Log.e(TAG, "Socket close() of server failed", e)
             }
         }
     }
