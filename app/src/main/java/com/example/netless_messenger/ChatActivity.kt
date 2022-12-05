@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +38,10 @@ class ChatActivity: AppCompatActivity() {
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
 
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
-
+        val chatViewModel = MainActivity.chatViewModel
+        chatViewModel.currentMessageList.observe(this, Observer {
+            Log.e(TAG, "onCreate: current message list size is ${it.size}" )
+        })
         val uName = intent.getStringExtra("userName").toString()
 
         supportActionBar?.title = uName
@@ -64,7 +68,7 @@ class ChatActivity: AppCompatActivity() {
             if(entry.msgBody != ""){
                 setMessage(entry)
                 editText.setText("")
-//                sendMessage(entry)
+                sendMessage(entry)
             }
         }
 
@@ -88,7 +92,7 @@ class ChatActivity: AppCompatActivity() {
         messageTest.insert(message)
         Log.e(TAG, "message inserted")
         val allMessage = messageTest.allCommentsLiveData
-        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
+//        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 
 

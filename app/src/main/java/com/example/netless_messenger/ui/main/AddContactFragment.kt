@@ -2,6 +2,7 @@ package com.example.netless_messenger.ui.main
 
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.netless_messenger.BluetoothServices
 import com.example.netless_messenger.DeviceViewModel
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
@@ -86,6 +88,12 @@ class AddContactFragment: Fragment() {
         builder.setView(deviceListView)
         deviceListDialog = builder.create()
 
+        val bluetoothServicesIntent = Intent(requireContext(), BluetoothServices::class.java)
+        requireActivity().startService(bluetoothServicesIntent)
+        requireActivity().applicationContext.bindService(bluetoothServicesIntent,
+            MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
+
+
         return addContactFragmentView
     }
 
@@ -124,5 +132,10 @@ class AddContactFragment: Fragment() {
 
         if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
         else discoverySwitch.isChecked = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
     }
 }

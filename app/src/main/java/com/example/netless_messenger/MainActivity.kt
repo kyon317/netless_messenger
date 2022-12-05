@@ -23,12 +23,14 @@ class MainActivity : AppCompatActivity() {
         lateinit var backArrow: ImageView
         lateinit var messageTest: MessageTestViewModel
         lateinit var deviceViewModel:DeviceViewModel
+        lateinit var chatViewModel:ChatViewModel
     }
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         deviceViewModel = DeviceViewModel()
+        chatViewModel = ChatViewModel()
         checkPermission()
 
 
@@ -55,9 +57,10 @@ class MainActivity : AppCompatActivity() {
 
     // start bluetooth services
     private fun startServices(){
-        val bluetoothServicesIntent = Intent(this,BluetoothServices::class.java)
-        startService(bluetoothServicesIntent)
-        this.applicationContext.bindService(bluetoothServicesIntent, deviceViewModel, Context.BIND_AUTO_CREATE)
+        val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+        this.startService(connectionServicesIntent)
+        applicationContext.bindService(connectionServicesIntent,
+            MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
     }
 
     override fun onDestroy() {
