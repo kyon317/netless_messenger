@@ -114,8 +114,8 @@ class AddContactFragment: Fragment() {
             requireActivity().applicationContext.sendBroadcast(deviceDialogIntent)
         }
 
-        val deviceDialogFilter = IntentFilter("CLOSE_DEVICE_DIALOG")
-        requireActivity().applicationContext.registerReceiver(broadcastReceiver, deviceDialogFilter)
+        val deviceDialogSuccessFilter = IntentFilter("CONNECTION_SUCCESSFUL")
+        requireActivity().applicationContext.registerReceiver(broadcastReceiver, deviceDialogSuccessFilter)
 
         return addContactFragmentView
     }
