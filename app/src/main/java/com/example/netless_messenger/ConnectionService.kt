@@ -230,6 +230,7 @@ class ConnectionService() : Service() {
             val rcv_msg = Message()
             rcv_msg.msgBody = string
             rcv_msg.status = "rcv"
+            rcv_msg.userID = btDevice?.address ?: String()
             MainActivity.messageTest.insert(rcv_msg)
             Log.e("receive", string)
         }

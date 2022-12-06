@@ -46,6 +46,10 @@ class ChatActivity: AppCompatActivity() {
     private lateinit var status: TextView
     private lateinit var user_name_appbar: TextView
 
+
+    //Contact Info
+    private lateinit var incomingContact:User
+
     companion object{
         private val AVAILABLE = Color.GREEN                //#00FF00 //Green
         private val UNAVAILABLE = Color.RED           //#FF0000 //Red
@@ -80,7 +84,7 @@ class ChatActivity: AppCompatActivity() {
         })
 
         //ActionBar operations
-        val incomingContact = intent.getSerializableExtra("contact") as User
+        incomingContact = intent.getSerializableExtra("contact") as User
         val contactName = incomingContact.userName
         val contactDeviceMac = incomingContact.deviceMAC
 
@@ -134,7 +138,7 @@ class ChatActivity: AppCompatActivity() {
         messageTest.allMessageLiveData.observe(this) {
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
-            retrieveUserMessages("1")
+            retrieveUserMessages(incomingContact.deviceMAC)
             Thread.sleep(100)
 //            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
             messageRecyclerView.adapter = MessageViewAdapter(messageList)
@@ -147,7 +151,7 @@ class ChatActivity: AppCompatActivity() {
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
             //TODO: Implement user ID stuff
-            entry.userID = "1" //Still need to be fixed
+            entry.userID = incomingContact.deviceMAC //Still need to be fixed
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
