@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.ui.main.MainFragment
+import kotlin.concurrent.fixedRateTimer
 
 class MainActivity : AppCompatActivity() {
 //    private lateinit var messageTest: MessageTestViewModel
@@ -59,6 +60,18 @@ class MainActivity : AppCompatActivity() {
         val connectionServicesIntent = Intent(this,ConnectionService::class.java)
         startService(connectionServicesIntent)
         applicationContext.bindService(connectionServicesIntent, chatViewModel, Context.BIND_AUTO_CREATE)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val flag = intent.getStringExtra("frag")
+        if(flag == "mainFragment"){
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, MainFragment.newInstance())
+                .commitNow()
+        }
+
     }
 
     override fun onDestroy() {

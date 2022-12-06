@@ -2,8 +2,10 @@ package com.example.netless_messenger.ui.main
 
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -105,9 +108,26 @@ class AddContactFragment: Fragment() {
         deviceListDialog.setOnDismissListener {
             requireActivity().stopService(bluetoothServicesIntent)
             requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
+
+            val deviceDialogIntent = Intent()
+            deviceDialogIntent.action = "CLOSE_DEVICE_DIALOG"
+            requireActivity().applicationContext.sendBroadcast(deviceDialogIntent)
         }
 
+        val deviceDialogSuccessFilter = IntentFilter("CONNECTION_SUCCESSFUL")
+        requireActivity().applicationContext.registerReceiver(broadcastReceiver, deviceDialogSuccessFilter)
+
         return addContactFragmentView
+    }
+
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == "CONNECTION_SUCCESSFUL") {
+                deviceListDialog.dismiss()
+                Toast.makeText(requireActivity(), "Connection Successful!", Toast.LENGTH_SHORT).show()
+            }
+
+        }
     }
 
 

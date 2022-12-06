@@ -1,16 +1,22 @@
-package com.example.netless_messenger.database
+package com.example.netless_messenger.ui.main
 
 import android.app.AlertDialog
-import android.app.Dialog
+import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.view.Window
 import android.widget.*
 import androidx.lifecycle.ViewModelProvider
+import com.example.netless_messenger.ChatActivity
+import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
-import com.example.netless_messenger.ui.main.GridAdapter
+import com.example.netless_messenger.database.Message
+import com.example.netless_messenger.database.MessageTestViewModel
+import com.example.netless_messenger.database.User
+import com.example.netless_messenger.database.UserTestViewModel
+import kotlin.jvm.internal.Intrinsics
 
 
 class UserProfileActivity : AppCompatActivity() {
@@ -28,22 +34,36 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var gridView: GridView
 
     private lateinit var userViewModel: UserTestViewModel
+    private lateinit var messageViewModel: MessageTestViewModel
     private lateinit var cancelButton: Button
     private lateinit var saveButton: Button
 
     private var changeAvatarClicked = false
     private var changeContactNameClicke = false
 
+    private lateinit var contact:User
+    private var position = -1
+    private var avatarRef: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
 
+        position = intent.getIntExtra("position", -1)
         userViewModel = ViewModelProvider(this).get(UserTestViewModel::class.java)
+        userViewModel.allUsersLiveData.observe(this){
+
+        }
+
+        messageViewModel = ViewModelProvider(this).get(MessageTestViewModel::class.java)
+        messageViewModel.allMessageLiveData.observe(this){
+
+        }
         initUiElements()
 
         populateArray()
 
-        val contact = intent.getSerializableExtra("contactProfile") as User
+        // contact initialization
+        contact = intent.getSerializableExtra("contactProfile") as User
 
         contactName.setText(contact.userName)
         contactName.isEnabled = false
@@ -51,13 +71,16 @@ class UserProfileActivity : AppCompatActivity() {
         deviceName.setText(contact.deviceName)
         deviceName.isEnabled = false
 
+        displayImage.setImageResource(contact.userAvatar)
+
+
         imageGridLinearLayout.visibility = View.GONE
 
         val adapter = GridAdapter(this, imageArray)
         gridView.adapter = adapter
 
         editprofileButton.setOnClickListener(){
-            if(changeAvatarClicked == false){
+            if(!changeAvatarClicked){
                 imageGridLinearLayout.visibility = View.VISIBLE
                 editprofileButton.text = "DONE"
                 changeAvatarClicked = true
@@ -68,8 +91,10 @@ class UserProfileActivity : AppCompatActivity() {
             }
         }
 
+
         gridView.setOnItemClickListener{adapterView, view, position, l ->
             displayImage.setImageResource(imageArray[position])
+            avatarRef = imageArray[position]
         }
 
         editContactNameButton.setOnClickListener(){
@@ -95,6 +120,15 @@ class UserProfileActivity : AppCompatActivity() {
             builder.setPositiveButton("OK") { dialog, which ->
                 Toast.makeText(this, "OK Pressed", Toast.LENGTH_SHORT).show()
 
+                deleteUser(contact)
+                val intentMainFragment = Intent(this, MainActivity::class.java)
+                intentMainFragment.putExtra("frag", "mainFragment")
+                intentMainFragment.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intentMainFragment)
+//                val intentChatFragment = Intent(this, ChatActivity::class.java)
+//                intentChatFragment.putExtra("frag", "chatFragment")
+//                startActivity(intentChatFragment)
+                finish()
             }
 
             builder.setNegativeButton("CANCEL") { dialog, which ->
@@ -103,8 +137,14 @@ class UserProfileActivity : AppCompatActivity() {
             builder.show()
 
         }
+        saveButton.setOnClickListener(){
+            editUserDatabase()
+            finish()
+        }
 
-
+        cancelButton.setOnClickListener(){
+            finish()
+        }
 
     }
     private fun initUiElements(){
@@ -119,6 +159,7 @@ class UserProfileActivity : AppCompatActivity() {
         gridView = findViewById(R.id.grid)
         cancelButton = findViewById(R.id.cancel_button)
         saveButton = findViewById(R.id.save_button)
+
     }
 
     private fun populateArray(){
@@ -132,4 +173,27 @@ class UserProfileActivity : AppCompatActivity() {
         imageArray.add(R.drawable.avatar_7)
         imageArray.add(R.drawable.avatar_8)
     }
+
+
+    private fun deleteUser(_contact: User){
+        userViewModel.deleteUserById(_contact.id)
+        deleteMessage(_contact)
+    }
+
+    private fun deleteMessage(_contact: User){
+        messageViewModel.deleteUserMessages(_contact.deviceMAC)
+    }
+
+    private fun editUserDatabase(){
+        val currentUserName = contactName.text.toString()
+        var currentAvatar = contact.userAvatar
+        if (avatarRef != null)
+        {
+            currentAvatar = avatarRef as Int
+        }
+
+        userViewModel.updateUserNameAndAvatarById(contact.id,currentUserName,currentAvatar)
+
+    }
+
 }

@@ -22,9 +22,17 @@ class ChatViewModel: ViewModel(), ServiceConnection {
     // If the chat activity is not running when the service is terminated, it is the responsibility
     // of the activity to query this flag at the earliest possible opportunity and restart the
     // service if necessary.
-    private var isConnectionServiceRunning = MutableLiveData<Boolean>()
+    private var _isConnectionServiceRunning = MutableLiveData<Boolean>()
+    val isConnectionServiceRunning:LiveData<Boolean>
+        get() {
+            return _isConnectionServiceRunning
+        }
 
-    private var isConnectedToDevice = MutableLiveData<Boolean>()
+    private var _isConnectedToDevice = MutableLiveData<Boolean>()
+    val isConnectedToDevice:LiveData<Boolean>
+        get() {
+            return _isConnectedToDevice
+        }
     var deviceName = MutableLiveData<String>()
     var deviceAddress = MutableLiveData<String>()
     private var messageArrayList: ArrayList<com.example.netless_messenger.database.Message> = ArrayList()
@@ -36,21 +44,21 @@ class ChatViewModel: ViewModel(), ServiceConnection {
         }
 
     init {
-       isConnectionServiceRunning.value = true
-        isConnectedToDevice.value = false
+       _isConnectionServiceRunning.value = true
+        _isConnectedToDevice.value = false
     }
 
     //Live data observer ignores when this flag is true
     fun resetFlag_isConnectionServiceRunning(){
-        isConnectionServiceRunning.value = true
+        _isConnectionServiceRunning.value = true
     }
 
     fun getFlag_isConnectionServiceRunning() : Boolean{
-        return isConnectionServiceRunning.value!!
+        return _isConnectionServiceRunning.value!!
     }
 
     fun getFlag_isConnectedToDevice() : Boolean{
-        return isConnectedToDevice.value!!
+        return _isConnectedToDevice.value!!
     }
 
     override fun onServiceConnected(name : ComponentName?, service : IBinder?) {
@@ -80,14 +88,14 @@ class ChatViewModel: ViewModel(), ServiceConnection {
                 }
             }
             if (msg.what == ConnectionService.RESET_CONNECTION_SERVICE){
-                isConnectionServiceRunning.value = false
-                isConnectedToDevice.value = false;
+                _isConnectionServiceRunning.value = false
+                _isConnectedToDevice.value = false;
             }
             if (msg.what == ConnectionService.CONNECTION_SUCCEEDED){
                 val bundle = msg.data
                 deviceName.value = bundle.getString("Name")
                 deviceAddress.value = bundle.getString("Address")
-                isConnectedToDevice.value = true
+                _isConnectedToDevice.value = true
             }
         }
     }

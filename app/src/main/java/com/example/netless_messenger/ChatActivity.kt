@@ -1,37 +1,36 @@
 package com.example.netless_messenger
 
+import android.bluetooth.BluetoothManager
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.Message
 import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.database.User
-import com.example.netless_messenger.database.UserProfileActivity
+import com.example.netless_messenger.database.UserTestViewModel
+import com.example.netless_messenger.ui.main.UserProfileActivity
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
-//    private lateinit var database: MessageDatabase
-//    private lateinit var databaseDao: MessageDatabaseDao
-//    private lateinit var repository: MessageRepository
-//    private lateinit var viewModelFactory: MessageViewModelFactory
-//    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
 
+    private lateinit var userViewModel: UserTestViewModel
     private lateinit var messageTest: MessageTestViewModel
     private var messageList: ArrayList<Message> = ArrayList()
 
@@ -49,9 +48,11 @@ class ChatActivity: AppCompatActivity() {
 
     //Contact Info
     private lateinit var incomingContact:User
+    private var isConnected:Boolean? = false
+    private var currentActiveDeviceAddress:String? = ""
 
     companion object{
-        private val AVAILABLE = Color.GREEN                //#00FF00 //Green
+        private val AVAILABLE = Color.GREEN            //#00FF00 //Green
         private val UNAVAILABLE = Color.RED           //#FF0000 //Red
         private val AVALIABLE_STATUS = "Available"
         private val UNAVALIABLE_STATUS = "Unavailable"
@@ -59,7 +60,6 @@ class ChatActivity: AppCompatActivity() {
 
     //TODO: Delete Message functionality
     //TODO: Reconnect Button Functionality
-    //TODO: Display Image Customisation
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +77,27 @@ class ChatActivity: AppCompatActivity() {
         user_name_appbar = findViewById(R.id.chat_user_name)
 
 
+
+        //Define reset button
+        reset_connection_button.setOnClickListener(){
+            Toast.makeText(this, "Attempting connection", Toast.LENGTH_SHORT).show()
+            val pendingIntent = Intent()
+            val killIntent = Intent()
+            killIntent.action = "KILL_CONNECTION"
+            if (status.text == UNAVALIABLE_STATUS){
+                sendBroadcast(killIntent)
+                pendingIntent.action = "ATTEMPT_CONNECTION"
+                val btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
+                val bluetoothAdapter = btManager?.adapter
+                val targetDevice = bluetoothAdapter?.getRemoteDevice(incomingContact.deviceMAC)
+                pendingIntent.putExtra("SELECTED_DEVICE",targetDevice)
+                sendBroadcast(pendingIntent)
+            }else
+            {
+                Toast.makeText(this, "You are Connected!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
         val chatViewModel = MainActivity.chatViewModel
         chatViewModel.currentMessageList.observe(this, Observer {
@@ -87,8 +108,10 @@ class ChatActivity: AppCompatActivity() {
         incomingContact = intent.getSerializableExtra("contact") as User
         val contactName = incomingContact.userName
         val contactDeviceMac = incomingContact.deviceMAC
+        display_image.setImageResource((incomingContact.userAvatar))
 
-
+        //Initialize User Database
+        initUserDatabase()
 
         //Initialise Status onCrete
         if(chatViewModel.deviceAddress.value == contactDeviceMac){
@@ -100,16 +123,36 @@ class ChatActivity: AppCompatActivity() {
             status.background.setTint(UNAVAILABLE)
         }
 
-        chatViewModel.deviceAddress.observe(this){
-                //Status Background Color needs to change
-                //Status text == Available
-            if(it == contactDeviceMac){
+
+        chatViewModel.isConnectedToDevice.observe(this){
+            //Status Background Color needs to change
+            //Status text == Available
+            isConnected = it
+            if (it && currentActiveDeviceAddress == incomingContact.deviceMAC ){
                 status.text = AVALIABLE_STATUS
                 status.background.setTint(AVAILABLE)
+                reset_connection_button.visibility = View.GONE
             }
             else{
                 status.text = UNAVALIABLE_STATUS
                 status.background.setTint(UNAVAILABLE)
+                reset_connection_button.visibility = View.VISIBLE
+            }
+        }
+
+        chatViewModel.deviceAddress.observe(this){
+            //Status Background Color needs to change
+            //Status text == Available
+            currentActiveDeviceAddress = it
+            if(it == contactDeviceMac && isConnected == true){
+                status.text = AVALIABLE_STATUS
+                status.background.setTint(AVAILABLE)
+                reset_connection_button.visibility = View.GONE
+            }
+            else{
+                status.text = UNAVALIABLE_STATUS
+                status.background.setTint(UNAVAILABLE)
+                reset_connection_button.visibility = View.VISIBLE
             }
         }
 
@@ -120,19 +163,19 @@ class ChatActivity: AppCompatActivity() {
         user_name_appbar.text = contactName
 
         user_name_appbar.setOnClickListener(){
+            val position = intent.getIntExtra("position",-1)
+
             val profileIntent = Intent(this, UserProfileActivity::class.java)
             profileIntent.putExtra("contactProfile", incomingContact)
+            if (position != -1){
+                profileIntent.putExtra("position",position)
+            }
             startActivity(profileIntent)
         }
 
         //Back Button Action
         back_button.setOnClickListener(){
             finish()
-        }
-
-        //Reset Button Action
-        reset_connection_button.setOnClickListener(){
-
         }
 
         messageTest.allMessageLiveData.observe(this) {
@@ -160,19 +203,24 @@ class ChatActivity: AppCompatActivity() {
                 sendMessage(entry)
             }
         }
-        //Setting Status
+        //Checking connection Running Status
+        chatViewModel.isConnectionServiceRunning.observe(this){
+            if(!it){
+                val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+                stopService(connectionServicesIntent)
+                applicationContext.unbindService(MainActivity.chatViewModel)
 
+                chatViewModel.resetFlag_isConnectionServiceRunning()
+            }
+        }
     }
 
 
-//    private fun initDatabase() {
-//        database = MessageDatabase.getInstance(this)
-//        databaseDao = database.MessageDatabaseDao
-//        repository = MessageRepository(databaseDao)
-//        viewModelFactory = MessageViewModelFactory(repository)
-//        commentViewModel = ViewModelProvider(this, viewModelFactory).get(
-//            MessageViewModel.CommentViewModel::class.java)
-//    }
+    private fun initUserDatabase(){
+        userViewModel = ViewModelProvider(this).get(UserTestViewModel::class.java)
+        userViewModel.allUsersLiveData.observe(this){
+        }
+    }
 
     private fun setMessage(message: Message) {
         messageTest.insert(message)
@@ -196,5 +244,13 @@ class ChatActivity: AppCompatActivity() {
         msgIntent.action = "SENDMSG"
         msgIntent.putExtra("msgBody", snd_msg.msgBody)
         sendBroadcast(msgIntent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val dummy = intent.getStringExtra("frag")
+        if (dummy == "chatFragment"){
+            finish()
+        }
     }
 }

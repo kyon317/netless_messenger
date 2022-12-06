@@ -141,12 +141,17 @@ class ConnectionService() : Service() {
 //                Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
 //            })
             Log.e(TAG, "Socket accept() succeeded")
+
+
             isBlueConnected = true
 
             btDevice = bluetoothSocket?.remoteDevice
 
-            sendConnectionSucceededMessage()
+            val deviceDialogSuccessIntent = Intent()
+            deviceDialogSuccessIntent.action = "CONNECTION_SUCCESSFUL"
+            sendBroadcast(deviceDialogSuccessIntent)
 
+            sendConnectionSucceededMessage()
             funBlueClientStartReceive()
 
             //Close server socket because we have bluetooth socket and don't need it anymore
@@ -227,11 +232,14 @@ class ConnectionService() : Service() {
             message.what = MESSAGE_VALUE   // 0 = rcv
             message.data = bundle
             this@ConnectionService.msgHandler?.sendMessage(message)
-            val rcv_msg = Message()
-            rcv_msg.msgBody = string
-            rcv_msg.status = "rcv"
-            rcv_msg.userID = btDevice?.address ?: String()
-            MainActivity.messageTest.insert(rcv_msg)
+            if (string.isNotEmpty()){
+                val rcv_msg = Message()
+                rcv_msg.msgBody = string
+                rcv_msg.status = "rcv"
+                rcv_msg.userID = btDevice?.address ?: String()
+                MainActivity.messageTest.insert(rcv_msg)
+            }
+
             Log.e("receive", string)
         }
     }

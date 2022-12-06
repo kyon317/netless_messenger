@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Netless_Messenger"
         tools:targetApi="31">
-        <activity android:name=".database.UserProfileActivity"/>
+        <activity android:name=".ui.main.UserProfileActivity"/>
         <activity android:name=".ChatActivity" />
         <activity
             android:name=".MainActivity"

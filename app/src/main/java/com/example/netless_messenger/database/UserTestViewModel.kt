@@ -59,11 +59,10 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
         return null
     }
 
-    fun updateUserNameAndAvatarById(index: Int, name: String, avatar: Int) {
+    fun updateUserNameAndAvatarById(id: Long, name: String, avatar: Int) {
         val userList = allUsersLiveData.value
 
         if (userList != null && userList.size > 0){
-            val id = userList[index].id
             viewModelScope.launch(Dispatchers.IO) {
                 repository.updateUserInfo(id, name, avatar)
             }
