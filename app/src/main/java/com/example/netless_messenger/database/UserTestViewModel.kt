@@ -26,6 +26,12 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
+    fun attempt_insert(user : User){
+        viewModelScope.launch(Dispatchers.IO) {
+            if (allUsersLiveData.value?.contains(user) != true)
+                repository.insert(user)
+        }
+    }
     fun deleteFirst(){
         val entryList = allUsersLiveData.value
         if (entryList != null && entryList.size > 0){
