@@ -23,7 +23,13 @@ interface MessageDatabaseDao {
     @Query("DELETE FROM message_table")
     suspend fun deleteAll()
 
+    @Query("DELETE FROM message_table WHERE userID = :userID")
+    suspend fun deleteUserMessage(userID: String)
+
     @Query("DELETE FROM message_table WHERE id = :key") //":" indicates that it is a Bind variable
-    suspend fun deleteComment(key: Long)
+    suspend fun deleteMessage(key: Long)
+
+    @Query("SELECT * FROM message_table WHERE userID = :userID")
+    fun getUserMessageEntries(userID: String): List<Message>
 
 }

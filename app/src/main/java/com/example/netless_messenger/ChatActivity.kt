@@ -126,7 +126,7 @@ class ChatActivity: AppCompatActivity() {
         }
 
 
-        messageTest.allCommentsLiveData.observe(this) {
+        messageTest.allMessageLiveData.observe(this) {
 
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
@@ -164,7 +164,7 @@ class ChatActivity: AppCompatActivity() {
     private fun setMessage(message: Message) {
         messageTest.insert(message)
         Log.e(TAG, "message inserted")
-        val allMessage = messageTest.allCommentsLiveData
+        val allMessage = messageTest.allMessageLiveData
 //        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 
