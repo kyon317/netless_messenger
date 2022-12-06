@@ -223,6 +223,7 @@ class ChatActivity: AppCompatActivity() {
     }
 
     private fun setMessage(message: Message) {
+        message.timeStamp = System.currentTimeMillis()
         messageTest.insert(message)
         Log.e(TAG, "message inserted")
         val allMessage = messageTest.allMessageLiveData

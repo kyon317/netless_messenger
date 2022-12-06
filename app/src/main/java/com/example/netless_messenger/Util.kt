@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Util {
-    fun parseTimeStampToDate(timestamp : Long):Date{
-        return Date(timestamp)
+    fun parseTimeStampToDate(timestamp : Long):String{
+        val localDate = Date(timestamp)
+        val string = SimpleDateFormat("HH:mm").format(localDate)
+        return string
     }
 }
