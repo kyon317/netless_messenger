@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.*
 import android.content.BroadcastReceiver
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -14,11 +13,13 @@ import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import com.example.netless_messenger.database.Message
+import com.example.netless_messenger.database.User
+import com.example.netless_messenger.ui.main.MainFragment
 import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 //TODO: Handle connection terminated
@@ -42,6 +43,8 @@ class ConnectionService() : Service() {
     private val ENCODING_FORMAT = "GBK"
     private val TAG = "ConnectionService"
 
+    // User DB track list
+    private var currentContactList : ArrayList<String> = ArrayList()
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
@@ -144,7 +147,6 @@ class ConnectionService() : Service() {
 
             sendConnectionSucceededMessage()
 
-
             funBlueClientStartReceive()
 
             //Close server socket because we have bluetooth socket and don't need it anymore
@@ -172,6 +174,29 @@ class ConnectionService() : Service() {
                     Log.e(TAG, "funBlueClientStartReceive:" + e.toString())
                     disconnect()
                 }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun funInstantiateNewContact(currSocket : BluetoothSocket) {
+        val contact:User = User()
+        contact.deviceName = currSocket.remoteDevice.name
+        contact.deviceMAC = currSocket.remoteDevice.address
+//        contact.deviceID = currSocket.remoteDevice.uuids.toString()
+        contact.userName = currSocket.remoteDevice.name
+        val mainFragmentViewModel = MainFragment.userViewModel
+
+        if (mainFragmentViewModel.allUsersLiveData.value != null){
+            for (users in mainFragmentViewModel.allUsersLiveData.value!!){
+                currentContactList.add(users.deviceMAC)
+            }
+            if(!currentContactList.contains(contact.deviceMAC)){
+                val senderIntent = Intent()
+                senderIntent.action = "INSERTION_REQUIRED"
+                senderIntent.putExtra("CONTACT",contact)
+                sendBroadcast(senderIntent)
+//                mainFragmentViewModel.attempt_insert(contact)
             }
         }
     }
@@ -235,6 +260,7 @@ class ConnectionService() : Service() {
         bundle.putString("Address", address)
         message.what = CONNECTION_SUCCEEDED
         message.data = bundle
+        funInstantiateNewContact(bluetoothSocket!!)
         this@ConnectionService.msgHandler?.sendMessage(message)
     }
 
