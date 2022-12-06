@@ -26,11 +26,10 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
-    fun deleteUserById(index: Int){
+    fun deleteUserById(id: Long){
         val userList = allUsersLiveData.value
 
         if (userList != null && userList.size > 0){
-            val id = userList[index].id
             viewModelScope.launch(Dispatchers.IO) {
                 repository.delete(id)
             }

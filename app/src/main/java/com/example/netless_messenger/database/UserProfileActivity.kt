@@ -2,6 +2,7 @@ package com.example.netless_messenger.database
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -89,15 +90,17 @@ class UserProfileActivity : AppCompatActivity() {
             //TODO: Delete contact from user DB
 
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("Androidly Alert")
-            builder.setMessage("We have a message")
+            builder.setTitle("Delete Request")
+            builder.setMessage("Chats from ${contact.userName} as well as their contact information would be lost permanently. Are you sure you wnt to go ahead?" )
             builder.setPositiveButton("OK") { dialog, which ->
+                Toast.makeText(this, "OK Pressed", Toast.LENGTH_SHORT).show()
 
             }
 
             builder.setNegativeButton("CANCEL") { dialog, which ->
-
+                Toast.makeText(this, "Cancel Pressed", Toast.LENGTH_SHORT).show()
             }
+            builder.show()
 
         }
 
