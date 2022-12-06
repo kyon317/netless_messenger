@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,7 @@ import com.example.netless_messenger.R
 import com.example.netless_messenger.database.User
 
 //TODO( "Change exampleList to live list of avaiable devices")
-class RecyclerViewAdapter(private val exampleList : List<User>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter(private val exampleList : List<User>, private val deviceConnectedMac: String?): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.paired_element,
@@ -27,6 +28,10 @@ class RecyclerViewAdapter(private val exampleList : List<User>): RecyclerView.Ad
 
         val curView = holder.itemView.findViewById<CardView>(R.id.pairedElement)
         holder.deviceName.text = current.userName
+        holder.displayImageMain.setImageResource(current.userAvatar)
+        if(deviceConnectedMac!! != current.deviceMAC){
+            holder.connectedTag.visibility = View.GONE
+        }
 
         curView.setOnClickListener{
             val intent = Intent(it.context, ChatActivity::class.java)
@@ -43,6 +48,9 @@ class RecyclerViewAdapter(private val exampleList : List<User>): RecyclerView.Ad
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val deviceName = itemView.findViewById<TextView>(R.id.deviceName)
+        val displayImageMain = itemView.findViewById<ImageView>(R.id.displayImage)
+        val connectedTag = itemView.findViewById<TextView>(R.id.connected_tag)
+
     }
 
 

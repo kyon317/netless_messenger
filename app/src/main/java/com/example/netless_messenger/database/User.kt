@@ -21,7 +21,7 @@ data class User(
     var userName : String = "",
 
     @ColumnInfo(name = "userAvatar")
-    var userAvatar : Int = R.drawable.profile,
+    var userAvatar : Int = R.drawable.avatar_1,
 
     @ColumnInfo(name = "deviceName")
     var deviceName : String = "",

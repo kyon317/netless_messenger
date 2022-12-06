@@ -1,14 +1,12 @@
 package com.example.netless_messenger.database
 
+import android.app.AlertDialog
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.GridView
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
+import android.view.Window
+import android.widget.*
 import androidx.lifecycle.ViewModelProvider
 import com.example.netless_messenger.R
 import com.example.netless_messenger.ui.main.GridAdapter
@@ -76,7 +74,7 @@ class UserProfileActivity : AppCompatActivity() {
         editContactNameButton.setOnClickListener(){
             if(changeContactNameClicke == false){
                 contactName.isEnabled = true
-                editContactNameButton.setImageResource(R.drawable.ic_baseline_check_box_24)
+                editContactNameButton.setImageResource(R.drawable.ic_baseline_check_24)
                 changeContactNameClicke = true
             }else{
                 contactName.isEnabled = false
@@ -90,7 +88,19 @@ class UserProfileActivity : AppCompatActivity() {
             //TODO: Delete messages for user from Message DB
             //TODO: Delete contact from user DB
 
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Androidly Alert")
+            builder.setMessage("We have a message")
+            builder.setPositiveButton("OK") { dialog, which ->
+
+            }
+
+            builder.setNegativeButton("CANCEL") { dialog, which ->
+
+            }
+
         }
+
 
 
     }
