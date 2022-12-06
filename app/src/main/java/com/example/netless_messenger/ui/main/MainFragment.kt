@@ -62,7 +62,7 @@ class MainFragment : Fragment() {
         userViewModel.allUsersLiveData.observe(this.requireActivity()){
             //DO NOTHING
             Log.e(TAG, "onCreateView: current user list size ${it.size}" )
-            recyclerView.adapter = RecyclerViewAdapter(it)
+            recyclerView.adapter = RecyclerViewAdapter(it,"00")
         }
         //Back arrow does nothing in Main Fragment
         MainActivity.backArrow.setOnClickListener {

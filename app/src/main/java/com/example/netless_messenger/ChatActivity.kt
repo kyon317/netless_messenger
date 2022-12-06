@@ -134,7 +134,7 @@ class ChatActivity: AppCompatActivity() {
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
 //            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
-            retrieveUserMessages("1")
+            retrieveUserMessages("2")
             messageRecyclerView.scrollToPosition(it.size - 1)
 
         }
