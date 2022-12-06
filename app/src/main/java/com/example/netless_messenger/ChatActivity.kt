@@ -2,6 +2,7 @@ package com.example.netless_messenger
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.Message
 import com.example.netless_messenger.database.MessageTestViewModel
+import com.example.netless_messenger.database.User
+import com.example.netless_messenger.database.UserProfileActivity
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 
 class ChatActivity: AppCompatActivity() {
@@ -36,6 +39,17 @@ class ChatActivity: AppCompatActivity() {
     private lateinit var display_image: ImageView
     private lateinit var status: TextView
     private lateinit var user_name_appbar: TextView
+
+    companion object{
+        private val AVAILABLE = Color.GREEN                //#00FF00 //Green
+        private val UNAVAILABLE = Color.RED           //#FF0000 //Red
+        private val AVALIABLE_STATUS = "Available"
+        private val UNAVALIABLE_STATUS = "Unavailable"
+    }
+
+    //TODO: Delete Message functionality
+    //TODO: Reconnect Button Functionality
+    //TODO: Display Image Customisation
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,13 +74,46 @@ class ChatActivity: AppCompatActivity() {
         })
 
         //ActionBar operations
-        val uName = intent.getStringExtra("userName").toString()
+        val incomingContact = intent.getSerializableExtra("contact") as User
+        val contactName = incomingContact.userName
+        val contactDeviceMac = incomingContact.deviceMAC
+
+
+
+        //Initialise Status onCrete
+        if(chatViewModel.deviceAddress.value == contactDeviceMac){
+            status.text = AVALIABLE_STATUS
+            status.background.setTint(AVAILABLE)
+        }
+        else{
+            status.text = UNAVALIABLE_STATUS
+            status.background.setTint(UNAVAILABLE)
+        }
+
+        chatViewModel.deviceAddress.observe(this){
+                //Status Background Color needs to change
+                //Status text == Available
+            if(it == contactDeviceMac){
+                status.text = AVALIABLE_STATUS
+                status.background.setTint(AVAILABLE)
+            }
+            else{
+                status.text = UNAVALIABLE_STATUS
+                status.background.setTint(UNAVAILABLE)
+            }
+        }
 
         //Hide Action Bar
         supportActionBar?.hide()
 
         //Set user name as title
-        user_name_appbar.text = uName
+        user_name_appbar.text = contactName
+
+        user_name_appbar.setOnClickListener(){
+            val profileIntent = Intent(this, UserProfileActivity::class.java)
+            profileIntent.putExtra("contactProfile", incomingContact)
+            startActivity(profileIntent)
+        }
 
         //Back Button Action
         back_button.setOnClickListener(){
@@ -100,6 +147,7 @@ class ChatActivity: AppCompatActivity() {
                 sendMessage(entry)
             }
         }
+        //Setting Status
 
     }
 

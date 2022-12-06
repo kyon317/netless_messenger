@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
+import com.example.netless_messenger.database.User
+import com.example.netless_messenger.database.UserTestViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainFragment : Fragment() {
@@ -21,7 +23,10 @@ class MainFragment : Fragment() {
     private lateinit var viewModel : MainViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var floatButton: FloatingActionButton
+    private lateinit var userViewModel: UserTestViewModel
+
     private var exampleList: ArrayList<String> = arrayListOf("Jane Doe", "James Doe","Peter Parker")
+
 
     override fun onCreateView(
         inflater : LayoutInflater, container : ViewGroup?,
@@ -32,7 +37,28 @@ class MainFragment : Fragment() {
         floatButton = mainFragmentView.findViewById(R.id.floatingActionButton)
         recyclerView = mainFragmentView.findViewById(R.id.mainFragRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = RecyclerViewAdapter(exampleList)
+        //Initialize User DB
+        userViewModel = ViewModelProvider(this).get(UserTestViewModel::class.java)
+
+        val tempUser = User(
+            0,
+            "Adam Smith",
+            "Nokia 1100",
+            "123",
+            "MAC123"
+        )
+
+        userViewModel.insert(tempUser)
+
+        val userList = userViewModel.allUsersLiveData.value
+
+        userViewModel.allUsersLiveData.observe(requireActivity()){
+            //DO NOTHING
+            recyclerView.adapter = RecyclerViewAdapter(it)
+        }
+
+
+
 
         //To display custom view for when the recycler view is empty
         val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))

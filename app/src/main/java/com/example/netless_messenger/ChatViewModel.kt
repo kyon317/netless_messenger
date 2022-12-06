@@ -25,8 +25,8 @@ class ChatViewModel: ViewModel(), ServiceConnection {
     private var isConnectionServiceRunning = MutableLiveData<Boolean>()
 
     private var isConnectedToDevice = MutableLiveData<Boolean>()
-    private var deviceName = MutableLiveData<String>()
-    private var deviceAddress = MutableLiveData<String>()
+    var deviceName = MutableLiveData<String>()
+    var deviceAddress = MutableLiveData<String>()
     private var messageArrayList: ArrayList<com.example.netless_messenger.database.Message> = ArrayList()
     private var myMessageHandler: MessageHandler = MessageHandler(Looper.getMainLooper())
     var _currentMessageList = MutableLiveData<ArrayList<com.example.netless_messenger.database.Message>>()

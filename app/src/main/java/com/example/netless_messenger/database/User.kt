@@ -28,4 +28,4 @@ data class User(
     @ColumnInfo(name = "deviceMAC")
     var deviceMAC : String = ""
 
-)
+) : java.io.Serializable
