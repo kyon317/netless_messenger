@@ -9,6 +9,7 @@ import android.view.View
 import android.view.Window
 import android.widget.*
 import androidx.lifecycle.ViewModelProvider
+import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
 import com.example.netless_messenger.ui.main.GridAdapter
 
@@ -95,6 +96,10 @@ class UserProfileActivity : AppCompatActivity() {
             builder.setPositiveButton("OK") { dialog, which ->
                 Toast.makeText(this, "OK Pressed", Toast.LENGTH_SHORT).show()
 
+
+                val intentMainFragment = Intent(this, MainActivity::class.java)
+                intentMainFragment.putExtra("frag", "mainFragment")
+                startActivity(intentMainFragment)
             }
 
             builder.setNegativeButton("CANCEL") { dialog, which ->
