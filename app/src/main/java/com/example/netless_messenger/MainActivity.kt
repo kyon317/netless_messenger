@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         chatViewModel = ChatViewModel()
         checkPermission()
 
-
         //Hide default action bar
         supportActionBar?.hide()
 

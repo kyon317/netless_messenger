@@ -17,7 +17,7 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
     init {
         val userDao = UserDatabase.getInstance(application).userDatabaseDao
         repository = UserRepository(userDao)
-        allUsersLiveData = repository.allComments.asLiveData()
+        allUsersLiveData = repository.allUsers.asLiveData()
     }
 
     fun insert(user: User) {
@@ -26,10 +26,11 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
-    fun deleteFirst(){
-        val entryList = allUsersLiveData.value
-        if (entryList != null && entryList.size > 0){
-            val id = entryList[0].id
+    fun deleteUserById(index: Int){
+        val userList = allUsersLiveData.value
+
+        if (userList != null && userList.size > 0){
+            val id = userList[index].id
             viewModelScope.launch(Dispatchers.IO) {
                 repository.delete(id)
             }
@@ -37,20 +38,30 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
     }
 
     fun deleteAll(){
-        val commentList = allUsersLiveData.value
-        if (commentList != null && commentList.size > 0)
+        val userList = allUsersLiveData.value
+        if (userList != null && userList.size > 0)
             viewModelScope.launch(Dispatchers.IO) {
                 repository.deleteAll()
             }
     }
 
     fun getById(index:Int):User? {
-        val commentList = allUsersLiveData.value
+        val userList = allUsersLiveData.value
 
-        if (commentList != null && commentList.isNotEmpty())
+        if (userList != null && userList.isNotEmpty())
             return allUsersLiveData.value?.get(index)
         return null
     }
 
+    fun updateUserNameAndAvatarById(index: Int, name: String, avatar: Int) {
+        val userList = allUsersLiveData.value
+
+        if (userList != null && userList.size > 0){
+            val id = userList[index].id
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.updateUserInfo(id, name, avatar)
+            }
+        }
+    }
 
 }

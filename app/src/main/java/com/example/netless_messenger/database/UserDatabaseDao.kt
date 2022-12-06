@@ -1,8 +1,10 @@
 package com.example.jiaqing_hu.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.netless_messenger.R
 import com.example.netless_messenger.database.User
 import kotlinx.coroutines.flow.Flow
 
@@ -25,6 +27,8 @@ interface UserDatabaseDao {
     suspend fun deleteAll()
 
     @Query("DELETE FROM user_table WHERE id = :key") //":" indicates that it is a Bind variable
-    suspend fun deleteComment(key: Long)
+    suspend fun deleteUser(key: Long)
 
+    @Query("UPDATE user_table SET userName = :userName, userAvatar = :userAvatar WHERE id = :key")
+    suspend fun updateUser(key: Long, userName: String, userAvatar: Int)
 }

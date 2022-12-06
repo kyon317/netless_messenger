@@ -37,8 +37,13 @@ class MainFragment : Fragment() {
         floatButton = mainFragmentView.findViewById(R.id.floatingActionButton)
         recyclerView = mainFragmentView.findViewById(R.id.mainFragRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
+
+        //To display custom view for when the recycler view is empty
+        var emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
+
         //Initialize User DB
-        userViewModel = ViewModelProvider(this).get(UserTestViewModel::class.java)
+        userViewModel = ViewModelProvider(requireActivity()).get(UserTestViewModel::class.java)
+
 
         val tempUser = User(
             0,
@@ -49,21 +54,26 @@ class MainFragment : Fragment() {
             "MAC123"
         )
 
-        userViewModel.insert(tempUser)
-
+//        val user2 = User(
+//            1,
+//            "Reynolds Ladestu",
+//            R.drawable.profile,
+//            "Galaxy Note10",
+//            "123",
+//            "MAC123"
+//        )
+//
+//        userViewModel.insert(tempUser)
+//        userViewModel.insert(user2)
+//
         val userList = userViewModel.allUsersLiveData.value
 
         userViewModel.allUsersLiveData.observe(requireActivity()){
             //DO NOTHING
             recyclerView.adapter = RecyclerViewAdapter(it)
+            emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
         }
 
-
-
-
-        //To display custom view for when the recycler view is empty
-        val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
-        recyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
 
 //
 
