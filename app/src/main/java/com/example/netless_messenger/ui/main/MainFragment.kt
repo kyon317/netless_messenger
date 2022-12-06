@@ -91,7 +91,7 @@ class MainFragment : Fragment() {
     }
 
     private fun onNewUserConnected(newUser : User){
-        userViewModel.insert(newUser)
+        userViewModel.attempt_insert(newUser)
         Log.e(TAG, "onNewUserConnected: inserted" )
 //        recyclerView.adapter = RecyclerViewAdapter(userList = userViewModel.allUsersLiveData.value!!)
 //        userViewModel.allUsersLiveData.observe(this){
