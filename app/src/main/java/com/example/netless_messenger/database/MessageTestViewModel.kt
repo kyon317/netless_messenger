@@ -9,13 +9,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MessageTestViewModel(application: Application): AndroidViewModel(application) {
-    val allCommentsLiveData: LiveData<List<Message>>
+    val allMessageLiveData: LiveData<List<Message>>
     private val repository: MessageRepository
 
     init {
         val messageDao = MessageDatabase.getInstance(application).MessageDatabaseDao
         repository = MessageRepository(messageDao)
-        allCommentsLiveData = repository.allComments.asLiveData()
+        allMessageLiveData = repository.allComments.asLiveData()
     }
 
     fun insert(message : Message) {
@@ -24,10 +24,9 @@ class MessageTestViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
-    fun deleteFirst(){
-        val entryList = allCommentsLiveData.value
-        if (entryList != null && entryList.size > 0){
-            val id = entryList[0].id
+    fun deleteMessageById(id: Long){
+        val messageList = allMessageLiveData.value
+        if (messageList != null && messageList.size > 0){
             viewModelScope.launch(Dispatchers.IO) {
                 repository.delete(id)
             }
@@ -35,21 +34,36 @@ class MessageTestViewModel(application: Application): AndroidViewModel(applicati
     }
 
     fun deleteAll(){
-        val commentList = allCommentsLiveData.value
-        if (commentList != null && commentList.size > 0)
+        val messageList = allMessageLiveData.value
+        if (messageList != null && messageList.size > 0)
             viewModelScope.launch(Dispatchers.IO) {
                 repository.deleteAll()
             }
     }
 
-    fun getById(index:Int):Message? {
-        val commentList = allCommentsLiveData.value
+    fun deleteUserMessages(userId: String) {
+        val messageList = allMessageLiveData.value
+        if (messageList != null && messageList.size > 0)
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.deleteUserMessage(userId)
+            }
+    }
 
-        if (commentList != null && commentList.isNotEmpty())
-            return allCommentsLiveData.value?.get(index)
+    fun getById(index:Int):Message? {
+        val messageList = allMessageLiveData.value
+
+        if (messageList != null && messageList.isNotEmpty())
+            return allMessageLiveData.value?.get(index)
         return null
     }
 
+    suspend fun getUserMessageEntries(userId: String):  List<Message>{
+        val messageList = allMessageLiveData.value
 
+        if (messageList != null && messageList.size > 0){
+            return repository.getUserMessageEntries(userId)
+        }
+        return emptyList()
+    }
 }
 

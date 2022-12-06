@@ -49,6 +49,7 @@ class MainFragment : Fragment() {
         recyclerView = mainFragmentView.findViewById(R.id.mainFragRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
+
         //To display custom view for when the recycler view is empty
 //        val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
 //        recyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)

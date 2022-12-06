@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     class CommentViewModel(private val repository: UserRepository) : ViewModel() {
-        val allCommentsLiveData: LiveData<List<User>> = repository.allComments.asLiveData()
+        val allCommentsLiveData: LiveData<List<User>> = repository.allUsers.asLiveData()
 
         fun insert(user: User) {
             viewModelScope.launch(Dispatchers.IO) {
