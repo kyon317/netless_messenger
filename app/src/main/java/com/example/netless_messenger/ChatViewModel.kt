@@ -3,6 +3,7 @@ package com.example.netless_messenger
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Handler
 import android.os.IBinder
@@ -22,6 +23,7 @@ class ChatViewModel: ViewModel(), ServiceConnection {
     // of the activity to query this flag at the earliest possible opportunity and restart the
     // service if necessary.
     private var isConnectionServiceRunning = MutableLiveData<Boolean>()
+
     private var isConnectedToDevice = MutableLiveData<Boolean>()
     private var deviceName = MutableLiveData<String>()
     private var deviceAddress = MutableLiveData<String>()

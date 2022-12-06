@@ -52,8 +52,10 @@ class ConnectionService() : Service() {
         // Register for broadcasts when a msg is sent.
         val msgFilter = IntentFilter("SENDMSG")
         val attemptConnectionFilter = IntentFilter("ATTEMPT_CONNECTION")
+        val killCurrentServiceFilter = IntentFilter("KILL_CONNECTION")
         this.applicationContext.registerReceiver(broadcastReceiver, msgFilter)
         this.applicationContext.registerReceiver(broadcastReceiver, attemptConnectionFilter)
+        this.applicationContext.registerReceiver(broadcastReceiver, killCurrentServiceFilter)
 
         funStartListeningForConnection()
     }
@@ -78,6 +80,10 @@ class ConnectionService() : Service() {
             {
                 btDevice = intent.getParcelableExtra<BluetoothDevice>("SELECTED_DEVICE")!!
                 funStartBlueClientConnect()
+            }
+            else if(intent.action == "KILL_CONNECTION")
+            {
+                disconnect()
             }
         }
     }
@@ -252,6 +258,7 @@ class ConnectionService() : Service() {
 
         this.stopSelf()
     }
+
 
     // Bind & Unbind
     override fun onBind(intent : Intent?) : IBinder? {
