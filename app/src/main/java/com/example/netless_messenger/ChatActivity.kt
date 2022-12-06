@@ -33,6 +33,7 @@ class ChatActivity: AppCompatActivity() {
 //    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
 
     private lateinit var messageTest: MessageTestViewModel
+    private var messageList: ArrayList<Message> = ArrayList()
 
     private lateinit var editText: EditText
     private lateinit var sendButton: ImageView
@@ -133,9 +134,11 @@ class ChatActivity: AppCompatActivity() {
         messageTest.allMessageLiveData.observe(this) {
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
-//            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
             retrieveUserMessages("1")
-            messageRecyclerView.scrollToPosition(it.size - 1)
+            Thread.sleep(100)
+//            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
+            messageRecyclerView.adapter = MessageViewAdapter(messageList)
+            messageRecyclerView.scrollToPosition(messageList.size - 1)
 
         }
 
@@ -177,12 +180,9 @@ class ChatActivity: AppCompatActivity() {
     //This function will update the adapter with message list of the specified user
     private fun retrieveUserMessages(userId: String) {
         CoroutineScope(IO).launch {
-            var messageList = messageTest.getUserMessageEntries(userId)
-            if (messageList.isNotEmpty())
-                messageList = messageList as ArrayList<Message>
-            else
-                messageList = ArrayList()
-            messageRecyclerView.adapter = MessageViewAdapter(messageList)
+            var currentMessageList = messageTest.getUserMessageEntries(userId)
+            if (currentMessageList.isNotEmpty())
+                messageList = currentMessageList as ArrayList<Message>
         }
     }
 
