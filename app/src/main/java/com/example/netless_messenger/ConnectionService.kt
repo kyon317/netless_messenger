@@ -192,7 +192,11 @@ class ConnectionService() : Service() {
                 currentContactList.add(users.deviceMAC)
             }
             if(!currentContactList.contains(contact.deviceMAC)){
-                mainFragmentViewModel.attempt_insert(contact)
+                val senderIntent = Intent()
+                senderIntent.action = "INSERTION_REQUIRED"
+                senderIntent.putExtra("CONTACT",contact)
+                sendBroadcast(senderIntent)
+//                mainFragmentViewModel.attempt_insert(contact)
             }
         }
     }
@@ -256,6 +260,7 @@ class ConnectionService() : Service() {
         bundle.putString("Address", address)
         message.what = CONNECTION_SUCCEEDED
         message.data = bundle
+        funInstantiateNewContact(bluetoothSocket!!)
         this@ConnectionService.msgHandler?.sendMessage(message)
     }
 

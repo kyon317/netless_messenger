@@ -1,7 +1,6 @@
 package com.example.netless_messenger.ui.main
 
 import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import com.example.netless_messenger.R
 import com.example.netless_messenger.database.User
 
 //TODO( "Change exampleList to live list of avaiable devices")
-class RecyclerViewAdapter(private val exampleList : List<User>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter(private val userList : List<User>): RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.paired_element,
@@ -23,7 +22,7 @@ class RecyclerViewAdapter(private val exampleList : List<User>): RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val current = exampleList[position]
+        val current = userList[position]
 
         val curView = holder.itemView.findViewById<CardView>(R.id.pairedElement)
         holder.deviceName.text = current.userName
@@ -38,7 +37,7 @@ class RecyclerViewAdapter(private val exampleList : List<User>): RecyclerView.Ad
     }
 
     override fun getItemCount(): Int {
-        return exampleList.size
+        return userList.size
     }
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
