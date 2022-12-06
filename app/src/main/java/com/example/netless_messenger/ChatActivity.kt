@@ -134,7 +134,7 @@ class ChatActivity: AppCompatActivity() {
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
 //            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
-            retrieveUserMessages("2")
+            retrieveUserMessages("1")
             messageRecyclerView.scrollToPosition(it.size - 1)
 
         }
@@ -144,7 +144,7 @@ class ChatActivity: AppCompatActivity() {
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
             //TODO: Implement user ID stuff
-            entry.userID = "2" //Still need to be fixed
+            entry.userID = "1" //Still need to be fixed
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
@@ -178,7 +178,8 @@ class ChatActivity: AppCompatActivity() {
     private fun retrieveUserMessages(userId: String) {
         CoroutineScope(IO).launch {
             var messageList = messageTest.getUserMessageEntries(userId) as ArrayList<Message>
-            messageRecyclerView.adapter = MessageViewAdapter(messageList)
+            if (messageList != null)
+                messageRecyclerView.adapter = MessageViewAdapter(messageList)
         }
     }
 

@@ -51,8 +51,7 @@ class MainFragment : Fragment() {
 
 
         //To display custom view for when the recycler view is empty
-//        val emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
-//        recyclerView.adapter?.registerAdapterDataObserver(emptyDataObserver)
+        var emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
 
 //
         //Initialize User DB
@@ -63,6 +62,7 @@ class MainFragment : Fragment() {
             //DO NOTHING
             Log.e(TAG, "onCreateView: current user list size ${it.size}" )
             recyclerView.adapter = RecyclerViewAdapter(it,"00")
+            emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
         }
         //Back arrow does nothing in Main Fragment
         MainActivity.backArrow.setOnClickListener {
