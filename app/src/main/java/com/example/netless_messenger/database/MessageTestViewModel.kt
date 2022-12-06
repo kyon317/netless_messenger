@@ -57,7 +57,7 @@ class MessageTestViewModel(application: Application): AndroidViewModel(applicati
         return null
     }
 
-    fun getUserMessageEntries(userId: String):  List<Message>{
+    suspend fun getUserMessageEntries(userId: String):  List<Message>{
         val messageList = allMessageLiveData.value
 
         if (messageList != null && messageList.size > 0){

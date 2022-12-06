@@ -30,6 +30,6 @@ interface MessageDatabaseDao {
     suspend fun deleteMessage(key: Long)
 
     @Query("SELECT * FROM message_table WHERE userID = :userID")
-    fun getUserMessageEntries(userID: String): List<Message>
+    suspend fun getUserMessageEntries(userID: String): List<Message>
 
 }

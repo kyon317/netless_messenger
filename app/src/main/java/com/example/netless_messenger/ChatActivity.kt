@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.Message
@@ -18,6 +19,10 @@ import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.database.User
 import com.example.netless_messenger.database.UserProfileActivity
 import com.example.netless_messenger.ui.main.MessageViewAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
@@ -125,20 +130,21 @@ class ChatActivity: AppCompatActivity() {
 
         }
 
-
         messageTest.allMessageLiveData.observe(this) {
-
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
-            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
+//            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
+            retrieveUserMessages("1")
             messageRecyclerView.scrollToPosition(it.size - 1)
+
         }
+
 
         sendButton.setOnClickListener{
             entry.status = Global.STATUS[1] //status = "snd"
             entry.msgBody = editText.text.toString()
             //TODO: Implement user ID stuff
-            entry.userID = "1" //Still need to be fixed
+            entry.userID = "2" //Still need to be fixed
             val tsLong = System.currentTimeMillis() / 1000
             entry.timeStamp = tsLong
             if(entry.msgBody != ""){
@@ -168,7 +174,13 @@ class ChatActivity: AppCompatActivity() {
 //        Log.e(TAG, "First message in database: ${allMessage.value?.get(1)?.msgBody}")
     }
 
-
+    //This function will update the adapter with message list of the specified user
+    private fun retrieveUserMessages(userId: String) {
+        CoroutineScope(IO).launch {
+            var messageList = messageTest.getUserMessageEntries(userId) as ArrayList<Message>
+            messageRecyclerView.adapter = MessageViewAdapter(messageList)
+        }
+    }
 
 
     private fun sendMessage(snd_msg : Message){

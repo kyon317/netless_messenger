@@ -18,12 +18,11 @@ class MessageRepository(private val messageDatabaseDao : MessageDatabaseDao) {
             messageDatabaseDao.deleteUserMessage(userID)
     }
 
-
     suspend fun deleteAll(){
             messageDatabaseDao.deleteAll()
     }
 
-    fun getUserMessageEntries(userID: String): List<Message>{
+    suspend fun getUserMessageEntries(userID: String): List<Message>{
             return messageDatabaseDao.getUserMessageEntries(userID)
     }
 
