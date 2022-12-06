@@ -27,6 +27,8 @@ import kotlin.concurrent.thread
 class ConnectionService() : Service() {
     companion object  {
         const val MESSAGE_VALUE = 0
+        const val RESET_CONNECTION_SERVICE = 1
+        const val CONNECTION_SUCCEEDED = 2
     }
 
     private var msgHandler: Handler? = null
@@ -89,16 +91,18 @@ class ConnectionService() : Service() {
             try {
                 // will block if runs in main thread
                 if (bluetoothSocket != null || !isBlueConnected) {
-                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery()
+                    btAdapter?.cancelDiscovery()
                     bluetoothSocket!!.connect()
                     Log.e(TAG, "Connected")
                     isBlueConnected = true
 
+                    sendConnectionSucceededMessage()
+
                     funBlueClientStartReceive()
                 }
             } catch (e: IOException) {
-                // handle exception
                 e.printStackTrace()
+                disconnect()
             }
         }
     }
@@ -112,6 +116,7 @@ class ConnectionService() : Service() {
                 tmp = btAdapter?.listenUsingInsecureRfcommWithServiceRecord(TAG, MY_UUID)
             } catch (e: IOException) {
                 Log.e(TAG, "Socket listen() failed", e)
+                disconnect()
             }
             btServerSocket = tmp
 
@@ -121,6 +126,7 @@ class ConnectionService() : Service() {
                 bluetoothSocket = btServerSocket?.accept()
             } catch (e: IOException) {
                 Log.e(TAG, "Socket accept() failed", e)
+                disconnect()
             }
 //            activity.runOnUiThread(Runnable {
 //                Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
@@ -129,6 +135,8 @@ class ConnectionService() : Service() {
             isBlueConnected = true
 
             btDevice = bluetoothSocket?.remoteDevice
+
+            sendConnectionSucceededMessage()
 
 
             funBlueClientStartReceive()
@@ -156,6 +164,7 @@ class ConnectionService() : Service() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e(TAG, "funBlueClientStartReceive:" + e.toString())
+                    disconnect()
                 }
             }
         }
@@ -172,14 +181,13 @@ class ConnectionService() : Service() {
                 bytes = mmInStream.read(mmBuffer)
             } catch (e: IOException) {
                 Log.d(TAG, "Input stream was disconnected", e)
-                break
+                disconnect()
             }
             if(mmBuffer[0].toInt() != 0)
             {
                 Log.d(TAG, "$mmBuffer")
             }
 
-            // TODO: it is able to send message but won't receive any
             val message = android.os.Message()
             val bundle = Bundle()
             // GBK encoding by default
@@ -205,8 +213,23 @@ class ConnectionService() : Service() {
             } catch (e: IOException) {
                 e.printStackTrace()
                 Log.e(TAG, "sendCommand: Failed to send message", e)
+                disconnect()
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun sendConnectionSucceededMessage()
+    {
+        val message = android.os.Message()
+        val bundle = Bundle()
+        val name = btDevice?.name
+        val address = btDevice?.address
+        bundle.putString("Name", name)
+        bundle.putString("Address", address)
+        message.what = CONNECTION_SUCCEEDED
+        message.data = bundle
+        this@ConnectionService.msgHandler?.sendMessage(message)
     }
 
     // disconnect current bluetooth connection
@@ -221,6 +244,13 @@ class ConnectionService() : Service() {
                 Log.e(TAG, "disconnect: failed to disconnect", e)
             }
         }
+
+        val message = android.os.Message()
+        message.what = RESET_CONNECTION_SERVICE
+        this@ConnectionService.msgHandler?.sendMessage(message)
+        Log.e(TAG, "Reset flag set")
+
+        this.stopSelf()
     }
 
     // Bind & Unbind

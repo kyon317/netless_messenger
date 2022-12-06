@@ -22,8 +22,6 @@ import com.example.netless_messenger.MainActivity
 import com.example.netless_messenger.R
 
 class AddContactFragment: Fragment() {
-
-
     private lateinit var addContactTextView: TextView
     private lateinit var deviceListView: View
     private lateinit var deviceListDialog: AlertDialog
@@ -33,7 +31,6 @@ class AddContactFragment: Fragment() {
     companion object{
         const val RESULT_OK = 90
     }
-
 
     // Device View Model initialization
     override fun onCreate(savedInstanceState : Bundle?) {
@@ -56,86 +53,97 @@ class AddContactFragment: Fragment() {
                 .commitNow()
         }
 
+        val bluetoothServicesIntent = Intent(requireContext(), BluetoothServices::class.java)
 
         //Set Add Contact Text View to show Device List Dialog if pressed
         addContactTextView = addContactFragmentView.findViewById(R.id.add_contacts_tv)
         addContactTextView.setOnClickListener {
+            //Start discovery service
+            requireActivity().startService(bluetoothServicesIntent)
+            requireActivity().applicationContext.bindService(bluetoothServicesIntent,
+                MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
+
+            //Show dialog
             deviceListDialog.show()
             //Set the size of the dialog window
             deviceListDialog.window?.setLayout(800,1000)
+
         }
-        //Define discovery switch
-        discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)
-        dicoveryModeSwitch()
+
+//        //Define discovery switch
+//        discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)
+//        dicoveryModeSwitch()
+
         //Create a view from a XML layout
         deviceListView = inflater.inflate(R.layout.add_contact_dialog, null)
+
         //Set cancel button in the dialog to dismiss the dialog
         val cancelButton = deviceListView.findViewById<Button>(R.id.dialog_cancel_button)
         cancelButton.setOnClickListener {
             deviceListDialog.dismiss()
         }
+
         val deviceDialogRecyclerView = deviceListView.findViewById<RecyclerView>(R.id.deviceDialogRecyclerView)
         deviceDialogRecyclerView.layoutManager = LinearLayoutManager(activity)
         // initialize DeviceListAdapter
         deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), ArrayList())
+        println("Dialog Recycler view size: ${deviceDialogRecyclerView.adapter!!.itemCount}")
+        var emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
+
         deviceViewmodel.availableDevices.observe(requireActivity(), Observer {
             deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), it)
+            //To display custom view for when the recycler view is empty
+            emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
         })
-
 
         //Build the custom alert dialog
         val builder = AlertDialog.Builder(activity)
         builder.setView(deviceListView)
         deviceListDialog = builder.create()
 
-        val bluetoothServicesIntent = Intent(requireContext(), BluetoothServices::class.java)
-        requireActivity().startService(bluetoothServicesIntent)
-        requireActivity().applicationContext.bindService(bluetoothServicesIntent,
-            MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
-
+        //When dialog is dismissed, stop service
+        deviceListDialog.setOnDismissListener {
+            requireActivity().stopService(bluetoothServicesIntent)
+            requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
+        }
 
         return addContactFragmentView
     }
 
 
-    // define action of discovery mode - force the phone to be discoverable
-    private fun dicoveryModeSwitch(){
-        discoverySwitch.setOnClickListener {
-            if (discoverySwitch.isChecked) {
-                val requestCode = 1;
-                val discoverableIntent: Intent =
-                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
-                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, RESULT_OK)
-                    }
+//    // define action of discovery mode - force the phone to be discoverable
+//    private fun dicoveryModeSwitch(){
+//        discoverySwitch.setOnClickListener {
+//            if (discoverySwitch.isChecked) {
+//                val requestCode = 1;
+//                val discoverableIntent: Intent =
+//                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+//                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, RESULT_OK)
+//                    }
+//
+//                startActivityForResult(discoverableIntent, requestCode)
+//                discoverySwitch.isClickable = false
+//
+//                object : CountDownTimer(RESULT_OK*1000L, 1000) {
+//
+//                    override fun onTick(millisUntilFinished: Long) {
+//                    }
+//
+//                    override fun onFinish() {
+//                        discoverySwitch.isClickable = true
+//                        discoverySwitch.isChecked = false
+//                    }
+//                }.start()
+//
+//
+//            }
+//        }
+//    }
 
-                startActivityForResult(discoverableIntent, requestCode)
-                discoverySwitch.isClickable = false
-
-                object : CountDownTimer(RESULT_OK*1000L, 1000) {
-
-                    override fun onTick(millisUntilFinished: Long) {
-                    }
-
-                    override fun onFinish() {
-                        discoverySwitch.isClickable = true
-                        discoverySwitch.isChecked = false
-                    }
-                }.start()
-
-
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
-        else discoverySwitch.isChecked = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        requireActivity().applicationContext.unbindService(MainActivity.deviceViewModel)
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
+//        else discoverySwitch.isChecked = false
+//    }
 }

@@ -34,8 +34,7 @@ class DeviceListAdapter(private val _context: Context, private val deviceNameLis
             deviceName.text = cur.name.toString()
             Log.e(TAG, "onBindViewHolder: ${cur.name}", )
         }
-           
-        // TODO: start connection when clicked on a device
+
         curView.setOnClickListener(){
             if (cur.name!=null) {
                 val msgIntent = Intent()
@@ -43,33 +42,11 @@ class DeviceListAdapter(private val _context: Context, private val deviceNameLis
                 msgIntent.putExtra("SELECTED_DEVICE",cur)
                 context.sendBroadcast(msgIntent)
             }
-//            val btInstance = fragment.getBtInstance()
-//            val device = fragment.getBtViewModel().retrieveDevice(cur)
-//            btInstance.attemptConnection(device)
         }
     }
 
     override fun getItemCount(): Int {
        return deviceNameList.size
-    }
-
-    // start bluetooth services
-    private fun startBluetoothServices(targetDevice : BluetoothDevice){
-        val bluetoothServicesIntent = Intent(context,BluetoothServices::class.java)
-        bluetoothServicesIntent.putExtra("Device",targetDevice)
-        context.startService(bluetoothServicesIntent)
-        context.bindService(bluetoothServicesIntent,
-            MainActivity.deviceViewModel, Context.BIND_AUTO_CREATE)
-
-    }
-    // start bluetooth services
-    private fun startConnectionServices(targetDevice : BluetoothDevice){
-        val connectionServicesIntent = Intent(context,ConnectionService::class.java)
-        connectionServicesIntent.putExtra("Device",targetDevice)
-        context.startService(connectionServicesIntent)
-        context.bindService(connectionServicesIntent,
-            MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
-
     }
 
     override fun onDetachedFromRecyclerView(recyclerView : RecyclerView) {
