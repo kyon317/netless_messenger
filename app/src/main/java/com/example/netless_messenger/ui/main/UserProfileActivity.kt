@@ -62,6 +62,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         populateArray()
 
+        // contact initialization
         contact = intent.getSerializableExtra("contactProfile") as User
 
         contactName.setText(contact.userName)
@@ -70,13 +71,16 @@ class UserProfileActivity : AppCompatActivity() {
         deviceName.setText(contact.deviceName)
         deviceName.isEnabled = false
 
+        displayImage.setImageResource(contact.userAvatar)
+
+
         imageGridLinearLayout.visibility = View.GONE
 
         val adapter = GridAdapter(this, imageArray)
         gridView.adapter = adapter
 
         editprofileButton.setOnClickListener(){
-            if(changeAvatarClicked == false){
+            if(!changeAvatarClicked){
                 imageGridLinearLayout.visibility = View.VISIBLE
                 editprofileButton.text = "DONE"
                 changeAvatarClicked = true
@@ -86,6 +90,7 @@ class UserProfileActivity : AppCompatActivity() {
                 changeAvatarClicked = false
             }
         }
+
 
         gridView.setOnItemClickListener{adapterView, view, position, l ->
             displayImage.setImageResource(imageArray[position])

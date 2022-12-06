@@ -1,13 +1,17 @@
 package com.example.netless_messenger
 
+import android.bluetooth.BluetoothManager
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +21,6 @@ import com.example.netless_messenger.database.Message
 import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.database.User
 import com.example.netless_messenger.database.UserTestViewModel
-import com.example.netless_messenger.ui.main.MainFragment.Companion.userViewModel
 import com.example.netless_messenger.ui.main.UserProfileActivity
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -45,9 +48,11 @@ class ChatActivity: AppCompatActivity() {
 
     //Contact Info
     private lateinit var incomingContact:User
+    private var isConnected:Boolean? = false
+    private var currentActiveDeviceAddress:String? = ""
 
     companion object{
-        private val AVAILABLE = Color.GREEN                //#00FF00 //Green
+        private val AVAILABLE = Color.GREEN            //#00FF00 //Green
         private val UNAVAILABLE = Color.RED           //#FF0000 //Red
         private val AVALIABLE_STATUS = "Available"
         private val UNAVALIABLE_STATUS = "Unavailable"
@@ -72,8 +77,25 @@ class ChatActivity: AppCompatActivity() {
         user_name_appbar = findViewById(R.id.chat_user_name)
 
 
-        reset_connection_button.setOnClickListener(){
 
+        //Define reset button
+        reset_connection_button.setOnClickListener(){
+            Toast.makeText(this, "Attempting connection", Toast.LENGTH_SHORT).show()
+            val pendingIntent = Intent()
+            val killIntent = Intent()
+            killIntent.action = "KILL_CONNECTION"
+            if (status.text == UNAVALIABLE_STATUS){
+                sendBroadcast(killIntent)
+                pendingIntent.action = "ATTEMPT_CONNECTION"
+                val btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
+                val bluetoothAdapter = btManager?.adapter
+                val targetDevice = bluetoothAdapter?.getRemoteDevice(incomingContact.deviceMAC)
+                pendingIntent.putExtra("SELECTED_DEVICE",targetDevice)
+                sendBroadcast(pendingIntent)
+            }else
+            {
+                Toast.makeText(this, "You are Connected!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
@@ -101,16 +123,36 @@ class ChatActivity: AppCompatActivity() {
             status.background.setTint(UNAVAILABLE)
         }
 
-        chatViewModel.deviceAddress.observe(this){
-                //Status Background Color needs to change
-                //Status text == Available
-            if(it == contactDeviceMac){
+
+        chatViewModel.isConnectedToDevice.observe(this){
+            //Status Background Color needs to change
+            //Status text == Available
+            isConnected = it
+            if (it && currentActiveDeviceAddress == incomingContact.deviceMAC ){
                 status.text = AVALIABLE_STATUS
                 status.background.setTint(AVAILABLE)
+                reset_connection_button.visibility = View.GONE
             }
             else{
                 status.text = UNAVALIABLE_STATUS
                 status.background.setTint(UNAVAILABLE)
+                reset_connection_button.visibility = View.VISIBLE
+            }
+        }
+
+        chatViewModel.deviceAddress.observe(this){
+            //Status Background Color needs to change
+            //Status text == Available
+            currentActiveDeviceAddress = it
+            if(it == contactDeviceMac && isConnected == true){
+                status.text = AVALIABLE_STATUS
+                status.background.setTint(AVAILABLE)
+                reset_connection_button.visibility = View.GONE
+            }
+            else{
+                status.text = UNAVALIABLE_STATUS
+                status.background.setTint(UNAVAILABLE)
+                reset_connection_button.visibility = View.VISIBLE
             }
         }
 
@@ -134,11 +176,6 @@ class ChatActivity: AppCompatActivity() {
         //Back Button Action
         back_button.setOnClickListener(){
             finish()
-        }
-
-        //Reset Button Action
-        reset_connection_button.setOnClickListener(){
-
         }
 
         messageTest.allMessageLiveData.observe(this) {
@@ -166,8 +203,16 @@ class ChatActivity: AppCompatActivity() {
                 sendMessage(entry)
             }
         }
-        //Setting Status
+        //Checking connection Running Status
+        chatViewModel.isConnectionServiceRunning.observe(this){
+            if(!it){
+                val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+                stopService(connectionServicesIntent)
+                applicationContext.unbindService(MainActivity.chatViewModel)
 
+                chatViewModel.resetFlag_isConnectionServiceRunning()
+            }
+        }
     }
 
 
