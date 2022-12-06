@@ -141,12 +141,17 @@ class ConnectionService() : Service() {
 //                Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
 //            })
             Log.e(TAG, "Socket accept() succeeded")
+
+
             isBlueConnected = true
 
             btDevice = bluetoothSocket?.remoteDevice
 
-            sendConnectionSucceededMessage()
+            val deviceDialogSuccessIntent = Intent()
+            deviceDialogSuccessIntent.action = "CONNECTION_SUCCESSFUL"
+            sendBroadcast(deviceDialogSuccessIntent)
 
+            sendConnectionSucceededMessage()
             funBlueClientStartReceive()
 
             //Close server socket because we have bluetooth socket and don't need it anymore
