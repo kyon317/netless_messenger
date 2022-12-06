@@ -49,13 +49,23 @@ class MainFragment : Fragment() {
         recyclerView = mainFragmentView.findViewById(R.id.mainFragRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-
         //To display custom view for when the recycler view is empty
         var emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
 
 //
         //Initialize User DB
         userViewModel = ViewModelProvider(this.requireActivity()).get(UserTestViewModel::class.java)
+
+//        val tempUser = User(
+//            0,
+//            "Adam",
+//            R.drawable.avatar_2,
+//            "Galaxy Note10",
+//            "123",
+//            "MAC123"
+//            )
+//        userViewModel.insert(tempUser)
+
         val insertionFilter = IntentFilter("INSERTION_REQUIRED")
         this.requireActivity().applicationContext.registerReceiver(broadcastReceiver, insertionFilter)
         userViewModel.allUsersLiveData.observe(this.requireActivity()){

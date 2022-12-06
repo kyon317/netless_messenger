@@ -177,9 +177,12 @@ class ChatActivity: AppCompatActivity() {
     //This function will update the adapter with message list of the specified user
     private fun retrieveUserMessages(userId: String) {
         CoroutineScope(IO).launch {
-            var messageList = messageTest.getUserMessageEntries(userId) as ArrayList<Message>
-            if (messageList != null)
-                messageRecyclerView.adapter = MessageViewAdapter(messageList)
+            var messageList = messageTest.getUserMessageEntries(userId)
+            if (messageList.isNotEmpty())
+                messageList = messageList as ArrayList<Message>
+            else
+                messageList = ArrayList()
+            messageRecyclerView.adapter = MessageViewAdapter(messageList)
         }
     }
 
