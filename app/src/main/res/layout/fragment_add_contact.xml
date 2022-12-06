@@ -8,15 +8,30 @@
     tools:context=".ui.main.AddContactFragment">
 
 
-
     <!-- Add Contacts Text View -->
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="Discovery Mode"
+        android:textSize="25sp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:switchMinWidth="50dp"
+        android:switchPadding="10dp"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"/>
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="75dp"
         android:id="@+id/add_contacts_tv"
-        android:background="@color/option_background"
+        android:background= "?android:attr/selectableItemBackground"
         android:text="Add Contacts"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:paddingLeft="30dp"
         android:paddingTop="30dp"/>
 
@@ -29,11 +44,11 @@
     <!-- Delete Chats Text View -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="75dp"
         android:id="@+id/delete_chat_tv"
-        android:background="@color/option_background"
+        android:background="?android:attr/selectableItemBackground"
         android:text="Delete Chats"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:paddingLeft="30dp"
         android:paddingTop="30dp"/>
 

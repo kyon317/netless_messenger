@@ -1,34 +1,39 @@
 package com.example.jiaqing_hu.database
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.example.netless_messenger.database.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /* UserViewModel - A view model that operates on ExerciseEntryRepository*/
 class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     class CommentViewModel(private val repository: UserRepository) : ViewModel() {
-        val allCommentsLiveData: LiveData<List<User>> = repository.allComments.asLiveData()
+        val allCommentsLiveData: LiveData<List<User>> = repository.allUsers.asLiveData()
 
         fun insert(user: User) {
-            repository.insert(user)
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.insert(user)
+            }
         }
 
         fun deleteFirst(){
             val entryList = allCommentsLiveData.value
             if (entryList != null && entryList.size > 0){
                 val id = entryList[0].id
-                repository.delete(id)
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.delete(id)
+                }
             }
         }
 
         fun deleteAll(){
             val commentList = allCommentsLiveData.value
             if (commentList != null && commentList.size > 0)
-                repository.deleteAll()
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.deleteAll()
+                }
         }
 
         fun getById(index:Int):User? {

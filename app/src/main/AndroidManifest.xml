@@ -24,9 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Netless_Messenger"
         tools:targetApi="31">
-
-
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".database.UserProfileActivity"/>
+        <activity android:name=".ChatActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -37,8 +36,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".BluetoothServices"></service>
-        <service android:name=".ConnectionService"></service>
+        <service android:name=".BluetoothServices" />
+        <service android:name=".ConnectionService" />
     </application>
 
 </manifest>
