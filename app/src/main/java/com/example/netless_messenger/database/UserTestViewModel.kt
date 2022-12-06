@@ -29,7 +29,14 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
 
     fun attempt_insert(user : User){
         viewModelScope.launch(Dispatchers.IO) {
-            if (allUsersLiveData.value?.contains(user) != true)
+            var isDuplicate = false
+            for (existingUser in allUsersLiveData.value!!){
+                if (user.deviceMAC == existingUser.deviceMAC &&
+                    user.deviceName == existingUser.deviceName){
+                    isDuplicate = true
+                }
+            }
+            if (!isDuplicate)
                 repository.insert(user)
         }
     }

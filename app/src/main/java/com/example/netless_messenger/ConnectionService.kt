@@ -18,6 +18,7 @@ import com.example.netless_messenger.ui.main.MainFragment
 import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
+import java.security.Timestamp
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
@@ -219,6 +220,7 @@ class ConnectionService() : Service() {
             } catch (e: IOException) {
                 Log.d(TAG, "Input stream was disconnected", e)
                 disconnect()
+                break
             }
             if(mmBuffer[0].toInt() != 0)
             {
@@ -242,10 +244,12 @@ class ConnectionService() : Service() {
                 rcv_msg.msgBody = string
                 rcv_msg.status = "rcv"
                 rcv_msg.userID = btDevice?.address ?: String()
+                rcv_msg.timeStamp = System.currentTimeMillis()
                 MainActivity.messageTest.insert(rcv_msg)
+                Log.e(TAG, "receiveMessage: ${Util.parseTimeStampToDate(rcv_msg.timeStamp)}" )
             }
-
             Log.e("receive", string)
+
         }
     }
 
