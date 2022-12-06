@@ -11,27 +11,23 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.database.Message
 import com.example.netless_messenger.database.MessageTestViewModel
 import com.example.netless_messenger.database.User
-import com.example.netless_messenger.database.UserProfileActivity
+import com.example.netless_messenger.database.UserTestViewModel
+import com.example.netless_messenger.ui.main.MainFragment.Companion.userViewModel
+import com.example.netless_messenger.ui.main.UserProfileActivity
 import com.example.netless_messenger.ui.main.MessageViewAdapter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
 class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
-//    private lateinit var database: MessageDatabase
-//    private lateinit var databaseDao: MessageDatabaseDao
-//    private lateinit var repository: MessageRepository
-//    private lateinit var viewModelFactory: MessageViewModelFactory
-//    private lateinit var commentViewModel: MessageViewModel.CommentViewModel
 
+    private lateinit var userViewModel: UserTestViewModel
     private lateinit var messageTest: MessageTestViewModel
     private var messageList: ArrayList<Message> = ArrayList()
 
@@ -59,7 +55,6 @@ class ChatActivity: AppCompatActivity() {
 
     //TODO: Delete Message functionality
     //TODO: Reconnect Button Functionality
-    //TODO: Display Image Customisation
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +72,10 @@ class ChatActivity: AppCompatActivity() {
         user_name_appbar = findViewById(R.id.chat_user_name)
 
 
+        reset_connection_button.setOnClickListener(){
+
+        }
+
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
         val chatViewModel = MainActivity.chatViewModel
         chatViewModel.currentMessageList.observe(this, Observer {
@@ -87,8 +86,10 @@ class ChatActivity: AppCompatActivity() {
         incomingContact = intent.getSerializableExtra("contact") as User
         val contactName = incomingContact.userName
         val contactDeviceMac = incomingContact.deviceMAC
+        display_image.setImageResource((incomingContact.userAvatar))
 
-
+        //Initialize User Database
+        initUserDatabase()
 
         //Initialise Status onCrete
         if(chatViewModel.deviceAddress.value == contactDeviceMac){
@@ -120,8 +121,13 @@ class ChatActivity: AppCompatActivity() {
         user_name_appbar.text = contactName
 
         user_name_appbar.setOnClickListener(){
+            val position = intent.getIntExtra("position",-1)
+
             val profileIntent = Intent(this, UserProfileActivity::class.java)
             profileIntent.putExtra("contactProfile", incomingContact)
+            if (position != -1){
+                profileIntent.putExtra("position",position)
+            }
             startActivity(profileIntent)
         }
 
@@ -165,14 +171,11 @@ class ChatActivity: AppCompatActivity() {
     }
 
 
-//    private fun initDatabase() {
-//        database = MessageDatabase.getInstance(this)
-//        databaseDao = database.MessageDatabaseDao
-//        repository = MessageRepository(databaseDao)
-//        viewModelFactory = MessageViewModelFactory(repository)
-//        commentViewModel = ViewModelProvider(this, viewModelFactory).get(
-//            MessageViewModel.CommentViewModel::class.java)
-//    }
+    private fun initUserDatabase(){
+        userViewModel = ViewModelProvider(this).get(UserTestViewModel::class.java)
+        userViewModel.allUsersLiveData.observe(this){
+        }
+    }
 
     private fun setMessage(message: Message) {
         messageTest.insert(message)
@@ -196,5 +199,13 @@ class ChatActivity: AppCompatActivity() {
         msgIntent.action = "SENDMSG"
         msgIntent.putExtra("msgBody", snd_msg.msgBody)
         sendBroadcast(msgIntent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val dummy = intent.getStringExtra("frag")
+        if (dummy == "chatFragment"){
+            finish()
+        }
     }
 }

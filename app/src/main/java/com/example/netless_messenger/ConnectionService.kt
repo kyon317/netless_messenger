@@ -227,11 +227,14 @@ class ConnectionService() : Service() {
             message.what = MESSAGE_VALUE   // 0 = rcv
             message.data = bundle
             this@ConnectionService.msgHandler?.sendMessage(message)
-            val rcv_msg = Message()
-            rcv_msg.msgBody = string
-            rcv_msg.status = "rcv"
-            rcv_msg.userID = btDevice?.address ?: String()
-            MainActivity.messageTest.insert(rcv_msg)
+            if (string.isNotEmpty()){
+                val rcv_msg = Message()
+                rcv_msg.msgBody = string
+                rcv_msg.status = "rcv"
+                rcv_msg.userID = btDevice?.address ?: String()
+                MainActivity.messageTest.insert(rcv_msg)
+            }
+
             Log.e("receive", string)
         }
     }

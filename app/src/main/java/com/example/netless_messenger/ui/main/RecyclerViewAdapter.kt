@@ -35,6 +35,7 @@ class RecyclerViewAdapter(private val userList : List<User>, private val deviceC
         curView.setOnClickListener{
             val intent = Intent(it.context, ChatActivity::class.java)
             intent.putExtra("contact", current)
+            intent.putExtra("position",position)
             // put chat refrence in intent
             it.context.startActivity(intent)
         }
