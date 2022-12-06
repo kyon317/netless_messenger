@@ -3,6 +3,7 @@ package com.example.netless_messenger.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.netless_messenger.R
 
 /* User - data class
 *  id - user id, long
@@ -18,6 +19,9 @@ data class User(
 
     @ColumnInfo(name = "userName")
     var userName : String = "",
+
+    @ColumnInfo(name = "userAvatar")
+    var userAvatar : Int = R.drawable.profile,
 
     @ColumnInfo(name = "deviceName")
     var deviceName : String = "",

@@ -43,6 +43,7 @@ class MainFragment : Fragment() {
         val tempUser = User(
             0,
             "Adam Smith",
+            R.drawable.profile,
             "Nokia 1100",
             "123",
             "MAC123"
