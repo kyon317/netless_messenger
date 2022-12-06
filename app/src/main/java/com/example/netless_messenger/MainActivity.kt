@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+        connectionServicesIntent.putExtra("Message",ConnectionService.CONNECTION_TERMINATE)
         stopService(connectionServicesIntent)
         applicationContext.unbindService(chatViewModel)
     }

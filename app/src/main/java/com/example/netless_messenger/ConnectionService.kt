@@ -30,6 +30,7 @@ class ConnectionService() : Service() {
         const val MESSAGE_VALUE = 0
         const val RESET_CONNECTION_SERVICE = 1
         const val CONNECTION_SUCCEEDED = 2
+        const val CONNECTION_TERMINATE = "TERMINATE_CONNECTION"
     }
 
     private var msgHandler: Handler? = null
@@ -223,11 +224,15 @@ class ConnectionService() : Service() {
             {
                 Log.d(TAG, "$mmBuffer")
             }
-
             val message = android.os.Message()
             val bundle = Bundle()
             // GBK encoding by default
             val string = String(mmBuffer, 0, bytes, Charset.forName(ENCODING_FORMAT))
+            // disconnect if receive terminate message
+            if (string == CONNECTION_TERMINATE){
+                disconnect()
+                break
+            }
             bundle.putString("Message", string)
             message.what = MESSAGE_VALUE   // 0 = rcv
             message.data = bundle
@@ -301,9 +306,19 @@ class ConnectionService() : Service() {
         return myBinder
     }
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.e(TAG, "onUnbind: debug: Service onUnBind() called~~~", )
+        Log.e(TAG, "onUnbind: debug: Service onUnBind() called")
         msgHandler = null
         return true
+    }
+
+    override fun stopService(name : Intent?) : Boolean {
+        if (name != null) {
+            val terminateRequestMessage = name.getStringExtra("Message")
+            if (terminateRequestMessage != null) {
+                funBlueClientSend(terminateRequestMessage)
+            }
+        }
+        return super.stopService(name)
     }
 
     inner class MyBinder : Binder() {
