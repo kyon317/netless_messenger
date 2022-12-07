@@ -27,3 +27,11 @@ This project was built as the final submission for CMPT 362 at Simon Fraser Univ
 ### 6. Download Project
 <a id="project-zip" href="https://github.com/kyon317/netless_messenger/releases/download/v1.0.0/Netless_Messenger.apk.included.zip">Download ZIP File</a>
 
+### 7. How To Use (Simple Use Case)
+i. Turn on bluetooth and start apps on both devices.
+ii. On one device press + button and set discovery mode switch on.
+iii. For another device, press + button then press add contact, on the dialog, press the device you want to connect.
+iv. Dialog will disapper once it is connected. Press back on top left corner will take you back to a view with contacts.
+v. Press the contact will start the chat. Press contact name in chat activity will allow user to modify contact name & avatar and delete contact.
+vi. Press refresh button on top right corner in chat activity will attempt to disconnect/reconnect when status is available/unavailable.
+For more details, please refer to our video.
