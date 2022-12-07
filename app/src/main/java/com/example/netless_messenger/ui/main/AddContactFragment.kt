@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -105,9 +106,15 @@ class AddContactFragment: Fragment() {
         var emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
 
         deviceViewmodel.availableDevices.observe(requireActivity(), Observer {
-            deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), it)
-            //To display custom view for when the recycler view is empty
-            emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
+            if(this.context != null)
+            {
+                deviceDialogRecyclerView.adapter = DeviceListAdapter(requireContext(), it)
+                //To display custom view for when the recycler view is empty
+                emptyDataObserver = EmptyRecyclerObserver(deviceDialogRecyclerView, deviceListView.findViewById(R.id.empty_device_view))
+            }
+            else{
+                Log.e("Here", "Here");
+            }
         })
 
         //Build the custom alert dialog
