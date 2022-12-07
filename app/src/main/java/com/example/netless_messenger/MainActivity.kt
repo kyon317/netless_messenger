@@ -1,6 +1,7 @@
 package com.example.netless_messenger
 
 import android.Manifest
+import android.bluetooth.BluetoothManager
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -14,11 +15,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.netless_messenger.database.MessageTestViewModel
+import com.example.netless_messenger.ui.main.BluetoothDisabledDialog
 import com.example.netless_messenger.ui.main.MainFragment
 import kotlin.concurrent.fixedRateTimer
 
 class MainActivity : AppCompatActivity() {
 //    private lateinit var messageTest: MessageTestViewModel
+
+    var bluetoothDisabledFlag = false;
 
     companion object {
         lateinit var backArrow: ImageView
@@ -34,21 +38,23 @@ class MainActivity : AppCompatActivity() {
         chatViewModel = ChatViewModel()
         checkPermission()
 
-        //Hide default action bar
-        supportActionBar?.hide()
+        //If bluetooth is disabled, close app on dialog dismiss
+        if(!bluetoothDisabledFlag) {
+            //Hide default action bar
+            supportActionBar?.hide()
 
-        //Initialize back arrow
-        backArrow = findViewById(R.id.back_arrow_icon)
+            //Initialize back arrow
+            backArrow = findViewById(R.id.back_arrow_icon)
 
-        //Add main fragment into the container
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commitNow()
-        }
+            //Add main fragment into the container
+            if (savedInstanceState == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, MainFragment.newInstance())
+                    .commitNow()
+            }
 
-        // initialize Database
-        messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
+            // initialize Database
+            messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
 
         //Checking connection Running Status
         chatViewModel.isConnectionServiceRunning.observe(this){
@@ -58,10 +64,10 @@ class MainActivity : AppCompatActivity() {
                 applicationContext.bindService(connectionServicesIntent, MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
 
 
-                chatViewModel.resetFlag_isConnectionServiceRunning()
+                    chatViewModel.resetFlag_isConnectionServiceRunning()
+                }
             }
         }
-
         //To debug ChatActivity.kt
 //        val intent = Intent(this, ChatActivity::class.java)
 //        startActivity(intent)
@@ -88,13 +94,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+        if(!bluetoothDisabledFlag){
+            val connectionServicesIntent = Intent(this,ConnectionService::class.java)
 //        connectionServicesIntent.putExtra("Message",ConnectionService.CONNECTION_TERMINATE)
-        stopService(connectionServicesIntent)
-        applicationContext.unbindService(chatViewModel)
+            stopService(connectionServicesIntent)
+            applicationContext.unbindService(chatViewModel)
+        }
     }
 
     private fun checkPermission() {
+        val btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
+        val btAdapter = btManager?.adapter
+        if(!btAdapter?.isEnabled!!)
+        {
+            val myDialog = BluetoothDisabledDialog()
+            myDialog.show(supportFragmentManager, "my dialog")
+            bluetoothDisabledFlag = true;
+            return;
+        }
+
         if (Build.VERSION.SDK_INT < 23) return
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.BLUETOOTH_SCAN
