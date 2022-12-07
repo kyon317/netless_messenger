@@ -73,9 +73,9 @@ class AddContactFragment: Fragment() {
 
         }
 
-//        //Define discovery switch
-//        discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)
-//        dicoveryModeSwitch()
+        //Define discovery switch
+        discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)
+        dicoveryModeSwitch()
 
         //Create a view from a XML layout
         deviceListView = inflater.inflate(R.layout.add_contact_dialog, null)
@@ -131,39 +131,42 @@ class AddContactFragment: Fragment() {
     }
 
 
-//    // define action of discovery mode - force the phone to be discoverable
-//    private fun dicoveryModeSwitch(){
-//        discoverySwitch.setOnClickListener {
-//            if (discoverySwitch.isChecked) {
-//                val requestCode = 1;
-//                val discoverableIntent: Intent =
-//                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
-//                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, RESULT_OK)
-//                    }
-//
-//                startActivityForResult(discoverableIntent, requestCode)
-//                discoverySwitch.isClickable = false
-//
-//                object : CountDownTimer(RESULT_OK*1000L, 1000) {
-//
-//                    override fun onTick(millisUntilFinished: Long) {
-//                    }
-//
-//                    override fun onFinish() {
-//                        discoverySwitch.isClickable = true
-//                        discoverySwitch.isChecked = false
-//                    }
-//                }.start()
-//
-//
-//            }
-//        }
-//    }
+    // define action of discovery mode - force the phone to be discoverable
+    private fun dicoveryModeSwitch(){
+        discoverySwitch.setOnClickListener {
+            if (discoverySwitch.isChecked) {
+                val requestCode = 1;
+                val discoverableIntent: Intent =
+                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, RESULT_OK)
+                    }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
-//        else discoverySwitch.isChecked = false
-//    }
+                startActivityForResult(discoverableIntent, requestCode)
+                discoverySwitch.isClickable = false
+
+                object : CountDownTimer(RESULT_OK*1000L, 1000) {
+
+                    override fun onTick(millisUntilFinished: Long) {
+                    }
+
+                    override fun onFinish() {
+                        discoverySwitch.isClickable = true
+                        discoverySwitch.isChecked = false
+                    }
+                }.start()
+
+
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode == RESULT_OK) print("bluetooth discovery enabled")
+        else {
+            discoverySwitch.isChecked = false
+            discoverySwitch.isClickable = true
+        }
+    }
 }
