@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -26,6 +27,7 @@ import com.example.netless_messenger.R
 
 class AddContactFragment: Fragment() {
     private lateinit var addContactTextView: TextView
+    private lateinit var moreInfoTextView: TextView
     private lateinit var deviceListView: View
     private lateinit var deviceListDialog: AlertDialog
     private lateinit var deviceViewmodel:DeviceViewModel
@@ -72,6 +74,12 @@ class AddContactFragment: Fragment() {
             deviceListDialog.window?.setLayout(800,1000)
 
         }
+        moreInfoTextView = addContactFragmentView.findViewById(R.id.moreinfo_chat_tv)
+        moreInfoTextView.setOnClickListener{
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kyon317/netless_messenger/"))
+            startActivity(browserIntent)
+        }
+
 
 //        //Define discovery switch
 //        discoverySwitch = addContactFragmentView.findViewById(R.id.switch1)

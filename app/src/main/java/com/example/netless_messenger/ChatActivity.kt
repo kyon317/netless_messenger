@@ -219,6 +219,7 @@ class ChatActivity: AppCompatActivity() {
     }
 
 
+
     private fun initUserDatabase(){
         userViewModel = ViewModelProvider(this).get(UserTestViewModel::class.java)
         userViewModel.allUsersLiveData.observe(this){
@@ -251,6 +252,8 @@ class ChatActivity: AppCompatActivity() {
     }
 
     override fun onResume() {
+        user_name_appbar.text = incomingContact.userName
+
         super.onResume()
         val dummy = intent.getStringExtra("frag")
         if (dummy == "chatFragment"){
