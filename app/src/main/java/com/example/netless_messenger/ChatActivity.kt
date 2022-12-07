@@ -213,6 +213,7 @@ class ChatActivity: AppCompatActivity() {
                 chatViewModel.resetFlag_isConnectionServiceRunning()
             }
         }
+
     }
 
 

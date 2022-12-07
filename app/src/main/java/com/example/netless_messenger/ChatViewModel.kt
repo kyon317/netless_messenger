@@ -89,13 +89,14 @@ class ChatViewModel: ViewModel(), ServiceConnection {
             }
             if (msg.what == ConnectionService.RESET_CONNECTION_SERVICE){
                 _isConnectionServiceRunning.value = false
-                _isConnectedToDevice.value = false;
+//                _isConnectedToDevice.value = false
+                _isConnectedToDevice.value = msg.data.getBoolean("ConnectionStatus")
             }
             if (msg.what == ConnectionService.CONNECTION_SUCCEEDED){
-                val bundle = msg.data
-                deviceName.value = bundle.getString("Name")
-                deviceAddress.value = bundle.getString("Address")
-                _isConnectedToDevice.value = true
+                deviceName.value = msg.data.getString("Name")
+                deviceAddress.value = msg.data.getString("Address")
+                _isConnectedToDevice.value = msg.data.getBoolean("ConnectionStatus")
+//                _isConnectedToDevice.value = true
             }
         }
     }

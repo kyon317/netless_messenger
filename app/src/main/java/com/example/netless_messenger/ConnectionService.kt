@@ -139,19 +139,12 @@ class ConnectionService() : Service() {
                 Log.e(TAG, "Socket accept() failed", e)
                 disconnect()
             }
-//            activity.runOnUiThread(Runnable {
-//                Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
-//            })
             Log.e(TAG, "Socket accept() succeeded")
 
 
             isBlueConnected = true
 
             btDevice = bluetoothSocket?.remoteDevice
-
-            val deviceDialogSuccessIntent = Intent()
-            deviceDialogSuccessIntent.action = "CONNECTION_SUCCESSFUL"
-            sendBroadcast(deviceDialogSuccessIntent)
 
             sendConnectionSucceededMessage()
             funBlueClientStartReceive()
@@ -276,9 +269,16 @@ class ConnectionService() : Service() {
         val address = btDevice?.address
         bundle.putString("Name", name)
         bundle.putString("Address", address)
+        bundle.putBoolean("ConnectionStatus",true)
         message.what = CONNECTION_SUCCEEDED
         message.data = bundle
         funInstantiateNewContact(bluetoothSocket!!)
+
+        val deviceDialogSuccessIntent = Intent()
+        deviceDialogSuccessIntent.action = "CONNECTION_SUCCESSFUL"
+        this.applicationContext.sendBroadcast(deviceDialogSuccessIntent)
+
+
         this@ConnectionService.msgHandler?.sendMessage(message)
     }
 
@@ -297,6 +297,7 @@ class ConnectionService() : Service() {
 
         val message = android.os.Message()
         message.what = RESET_CONNECTION_SERVICE
+        message.data.putBoolean("ConnectionStatus",isBlueConnected)
         this@ConnectionService.msgHandler?.sendMessage(message)
         Log.e(TAG, "Reset flag set")
 
