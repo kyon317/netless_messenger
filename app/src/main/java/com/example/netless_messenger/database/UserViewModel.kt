@@ -2,6 +2,7 @@ package com.example.jiaqing_hu.database
 
 import androidx.lifecycle.*
 import com.example.netless_messenger.database.User
+import com.example.netless_messenger.database.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
