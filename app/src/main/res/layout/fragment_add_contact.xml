@@ -45,9 +45,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:id="@+id/delete_chat_tv"
+        android:id="@+id/moreinfo_chat_tv"
         android:background="?android:attr/selectableItemBackground"
-        android:text="Delete Chats"
+        android:text="Find Out More"
         android:textSize="20sp"
         android:paddingLeft="30dp"
         android:paddingTop="30dp"/>

@@ -75,11 +75,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+        connectionServicesIntent.putExtra("Message",ConnectionService.CONNECTION_TERMINATE)
         stopService(connectionServicesIntent)
         applicationContext.unbindService(chatViewModel)
+        super.onDestroy()
     }
+
     private fun checkPermission() {
         if (Build.VERSION.SDK_INT < 23) return
         if (ContextCompat.checkSelfPermission(this,

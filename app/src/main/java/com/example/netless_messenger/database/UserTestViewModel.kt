@@ -5,8 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.jiaqing_hu.database.UserDatabase
-import com.example.jiaqing_hu.database.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -29,7 +27,14 @@ class UserTestViewModel(application: Application): AndroidViewModel(application)
 
     fun attempt_insert(user : User){
         viewModelScope.launch(Dispatchers.IO) {
-            if (allUsersLiveData.value?.contains(user) != true)
+            var isDuplicate = false
+            for (existingUser in allUsersLiveData.value!!){
+                if (user.deviceMAC == existingUser.deviceMAC &&
+                    user.deviceName == existingUser.deviceName){
+                    isDuplicate = true
+                }
+            }
+            if (!isDuplicate)
                 repository.insert(user)
         }
     }

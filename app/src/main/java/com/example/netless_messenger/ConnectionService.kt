@@ -18,6 +18,7 @@ import com.example.netless_messenger.ui.main.MainFragment
 import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
+import java.security.Timestamp
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
@@ -30,6 +31,7 @@ class ConnectionService() : Service() {
         const val MESSAGE_VALUE = 0
         const val RESET_CONNECTION_SERVICE = 1
         const val CONNECTION_SUCCEEDED = 2
+        const val CONNECTION_TERMINATE = "TERMINATE_CONNECTION"
     }
 
     private var msgHandler: Handler? = null
@@ -137,19 +139,12 @@ class ConnectionService() : Service() {
                 Log.e(TAG, "Socket accept() failed", e)
                 disconnect()
             }
-//            activity.runOnUiThread(Runnable {
-//                Toast.makeText(activity, "Socket accept() succeeded", Toast.LENGTH_SHORT).show()
-//            })
             Log.e(TAG, "Socket accept() succeeded")
 
 
             isBlueConnected = true
 
             btDevice = bluetoothSocket?.remoteDevice
-
-            val deviceDialogSuccessIntent = Intent()
-            deviceDialogSuccessIntent.action = "CONNECTION_SUCCESSFUL"
-            sendBroadcast(deviceDialogSuccessIntent)
 
             sendConnectionSucceededMessage()
             funBlueClientStartReceive()
@@ -218,16 +213,21 @@ class ConnectionService() : Service() {
             } catch (e: IOException) {
                 Log.d(TAG, "Input stream was disconnected", e)
                 disconnect()
+                break
             }
             if(mmBuffer[0].toInt() != 0)
             {
                 Log.d(TAG, "$mmBuffer")
             }
-
             val message = android.os.Message()
             val bundle = Bundle()
             // GBK encoding by default
             val string = String(mmBuffer, 0, bytes, Charset.forName(ENCODING_FORMAT))
+            // disconnect if receive terminate message
+            if (string == CONNECTION_TERMINATE){
+                disconnect()
+                break
+            }
             bundle.putString("Message", string)
             message.what = MESSAGE_VALUE   // 0 = rcv
             message.data = bundle
@@ -237,10 +237,12 @@ class ConnectionService() : Service() {
                 rcv_msg.msgBody = string
                 rcv_msg.status = "rcv"
                 rcv_msg.userID = btDevice?.address ?: String()
+                rcv_msg.timeStamp = System.currentTimeMillis()
                 MainActivity.messageTest.insert(rcv_msg)
+                Log.e(TAG, "receiveMessage: ${Util.parseTimeStampToDate(rcv_msg.timeStamp)}" )
             }
-
             Log.e("receive", string)
+
         }
     }
 
@@ -267,9 +269,16 @@ class ConnectionService() : Service() {
         val address = btDevice?.address
         bundle.putString("Name", name)
         bundle.putString("Address", address)
+        bundle.putBoolean("ConnectionStatus",true)
         message.what = CONNECTION_SUCCEEDED
         message.data = bundle
         funInstantiateNewContact(bluetoothSocket!!)
+
+        val deviceDialogSuccessIntent = Intent()
+        deviceDialogSuccessIntent.action = "CONNECTION_SUCCESSFUL"
+        this.applicationContext.sendBroadcast(deviceDialogSuccessIntent)
+
+
         this@ConnectionService.msgHandler?.sendMessage(message)
     }
 
@@ -288,6 +297,7 @@ class ConnectionService() : Service() {
 
         val message = android.os.Message()
         message.what = RESET_CONNECTION_SERVICE
+        message.data.putBoolean("ConnectionStatus",isBlueConnected)
         this@ConnectionService.msgHandler?.sendMessage(message)
         Log.e(TAG, "Reset flag set")
 
@@ -301,9 +311,19 @@ class ConnectionService() : Service() {
         return myBinder
     }
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.e(TAG, "onUnbind: debug: Service onUnBind() called~~~", )
+        Log.e(TAG, "onUnbind: debug: Service onUnBind() called")
         msgHandler = null
         return true
+    }
+
+    override fun stopService(name : Intent?) : Boolean {
+        if (name != null) {
+            val terminateRequestMessage = name.getStringExtra("Message")
+            if (terminateRequestMessage != null) {
+                funBlueClientSend(terminateRequestMessage)
+            }
+        }
+        return super.stopService(name)
     }
 
     inner class MyBinder : Binder() {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/message_holder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <RelativeLayout
@@ -23,6 +24,7 @@
             android:textColor="@color/white"
             android:textSize="14sp"/>
         <TextView
+            android:id="@+id/sent_time_stamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="12:00 PM"
@@ -54,6 +56,7 @@
             android:textColor="@color/white"
             android:textSize="14sp"/>
         <TextView
+            android:id="@+id/receive_time_stamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="12:00 PM"

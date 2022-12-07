@@ -177,14 +177,14 @@ class ChatActivity: AppCompatActivity() {
         back_button.setOnClickListener(){
             finish()
         }
-
+        //
         messageTest.allMessageLiveData.observe(this) {
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
             retrieveUserMessages(incomingContact.deviceMAC)
             Thread.sleep(100)
 //            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
-            messageRecyclerView.adapter = MessageViewAdapter(messageList)
+            messageRecyclerView.adapter = MessageViewAdapter(this, messageList)
             messageRecyclerView.scrollToPosition(messageList.size - 1)
 
         }
@@ -203,17 +203,21 @@ class ChatActivity: AppCompatActivity() {
                 sendMessage(entry)
             }
         }
+
         //Checking connection Running Status
         chatViewModel.isConnectionServiceRunning.observe(this){
             if(!it){
                 val connectionServicesIntent = Intent(this,ConnectionService::class.java)
-                stopService(connectionServicesIntent)
-                applicationContext.unbindService(MainActivity.chatViewModel)
+                startService(connectionServicesIntent)
+                applicationContext.bindService(connectionServicesIntent, MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
+
 
                 chatViewModel.resetFlag_isConnectionServiceRunning()
             }
         }
+
     }
+
 
 
     private fun initUserDatabase(){
@@ -223,6 +227,7 @@ class ChatActivity: AppCompatActivity() {
     }
 
     private fun setMessage(message: Message) {
+        message.timeStamp = System.currentTimeMillis()
         messageTest.insert(message)
         Log.e(TAG, "message inserted")
         val allMessage = messageTest.allMessageLiveData
@@ -247,6 +252,8 @@ class ChatActivity: AppCompatActivity() {
     }
 
     override fun onResume() {
+        user_name_appbar.text = incomingContact.userName
+
         super.onResume()
         val dummy = intent.getStringExtra("frag")
         if (dummy == "chatFragment"){

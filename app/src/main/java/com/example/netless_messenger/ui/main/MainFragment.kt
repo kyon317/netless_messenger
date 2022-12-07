@@ -52,19 +52,10 @@ class MainFragment : Fragment() {
         //To display custom view for when the recycler view is empty
         var emptyDataObserver = EmptyRecyclerObserver(recyclerView, mainFragmentView.findViewById(R.id.empty_contact_view))
 
-//
+
         //Initialize User DB
         userViewModel = ViewModelProvider(this.requireActivity()).get(UserTestViewModel::class.java)
 
-//        val tempUser = User(
-//            0,
-//            "Adam",
-//            R.drawable.avatar_2,
-//            "Galaxy Note10",
-//            "123",
-//            "MAC123"
-//            )
-//        userViewModel.insert(tempUser)
 
         val insertionFilter = IntentFilter("INSERTION_REQUIRED")
         this.requireActivity().applicationContext.registerReceiver(broadcastReceiver, insertionFilter)
@@ -91,20 +82,10 @@ class MainFragment : Fragment() {
     }
 
     private fun onNewUserConnected(newUser : User){
-        userViewModel.insert(newUser)
+        userViewModel.attempt_insert(newUser)
         Log.e(TAG, "onNewUserConnected: inserted" )
-//        recyclerView.adapter = RecyclerViewAdapter(userList = userViewModel.allUsersLiveData.value!!)
-//        userViewModel.allUsersLiveData.observe(this){
-//            Log.e(TAG, "onNewUserConnected: list updated ${it.size}" )
-//            recyclerView.adapter = RecyclerViewAdapter(it)
-//        }
     }
 
-//    override fun onActivityCreated(savedInstanceState : Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-//        // TODO: Use the ViewModel
-//    }
 
 private val broadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

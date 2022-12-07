@@ -1,4 +1,4 @@
-package com.example.jiaqing_hu.database
+package com.example.netless_messenger.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
