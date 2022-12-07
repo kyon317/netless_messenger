@@ -31,6 +31,7 @@ class ChatActivity: AppCompatActivity() {
     private var entry : Message = Message()
 
     private lateinit var userViewModel: UserTestViewModel
+    private lateinit var chatViewModel:ChatViewModel
     private lateinit var messageTest: MessageTestViewModel
     private var messageList: ArrayList<Message> = ArrayList()
 
@@ -76,6 +77,10 @@ class ChatActivity: AppCompatActivity() {
         status = findViewById(R.id.status)
         user_name_appbar = findViewById(R.id.chat_user_name)
 
+        chatViewModel = MainActivity.chatViewModel
+        chatViewModel.currentMessageList.observe(this, Observer {
+            Log.e(TAG, "onCreate: current message list size is ${it.size}" )
+        })
 
 
         //Define reset button
@@ -84,8 +89,12 @@ class ChatActivity: AppCompatActivity() {
             val pendingIntent = Intent()
             val killIntent = Intent()
             killIntent.action = "KILL_CONNECTION"
+
             if (status.text == UNAVALIABLE_STATUS){
                 sendBroadcast(killIntent)
+                while (!chatViewModel.isConnectionServiceRunning.value!!){
+                    Log.e(TAG, "onCreate: make it busy")
+                }
                 pendingIntent.action = "ATTEMPT_CONNECTION"
                 val btManager = this.applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
                 val bluetoothAdapter = btManager?.adapter
@@ -94,15 +103,13 @@ class ChatActivity: AppCompatActivity() {
                 sendBroadcast(pendingIntent)
             }else
             {
-                Toast.makeText(this, "You are Connected!", Toast.LENGTH_SHORT).show()
+                sendBroadcast(killIntent)
+                Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             }
         }
 
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
-        val chatViewModel = MainActivity.chatViewModel
-        chatViewModel.currentMessageList.observe(this, Observer {
-            Log.e(TAG, "onCreate: current message list size is ${it.size}" )
-        })
+
 
         //ActionBar operations
         incomingContact = intent.getSerializableExtra("contact") as User
@@ -114,7 +121,7 @@ class ChatActivity: AppCompatActivity() {
         initUserDatabase()
 
         //Initialise Status onCrete
-        if(chatViewModel.deviceAddress.value == contactDeviceMac){
+        if(chatViewModel.deviceAddress.value == contactDeviceMac && chatViewModel.isConnectedToDevice.value!!){
             status.text = AVALIABLE_STATUS
             status.background.setTint(AVAILABLE)
         }
@@ -131,7 +138,7 @@ class ChatActivity: AppCompatActivity() {
             if (it && currentActiveDeviceAddress == incomingContact.deviceMAC ){
                 status.text = AVALIABLE_STATUS
                 status.background.setTint(AVAILABLE)
-                reset_connection_button.visibility = View.GONE
+//                reset_connection_button.visibility = View.GONE
             }
             else{
                 status.text = UNAVALIABLE_STATUS
@@ -147,7 +154,7 @@ class ChatActivity: AppCompatActivity() {
             if(it == contactDeviceMac && isConnected == true){
                 status.text = AVALIABLE_STATUS
                 status.background.setTint(AVAILABLE)
-                reset_connection_button.visibility = View.GONE
+//                reset_connection_button.visibility = View.GONE
             }
             else{
                 status.text = UNAVALIABLE_STATUS

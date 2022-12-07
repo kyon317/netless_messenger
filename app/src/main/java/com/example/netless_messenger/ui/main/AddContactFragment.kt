@@ -32,6 +32,7 @@ class AddContactFragment: Fragment() {
     private lateinit var deviceListDialog: AlertDialog
     private lateinit var deviceViewmodel:DeviceViewModel
     private lateinit var discoverySwitch: Switch
+    private var dialogOpen = false
 
     companion object{
         const val RESULT_OK = 90
@@ -72,6 +73,8 @@ class AddContactFragment: Fragment() {
             deviceListDialog.show()
             //Set the size of the dialog window
             deviceListDialog.window?.setLayout(800,1000)
+
+            dialogOpen = true
 
         }
         moreInfoTextView = addContactFragmentView.findViewById(R.id.moreinfo_chat_tv)
@@ -131,8 +134,11 @@ class AddContactFragment: Fragment() {
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == "CONNECTION_SUCCESSFUL") {
-                deviceListDialog.dismiss()
-                Toast.makeText(requireActivity(), "Connection Successful!", Toast.LENGTH_SHORT).show()
+                if (dialogOpen){
+                    deviceListDialog.dismiss()
+                    Toast.makeText(requireActivity(), "Connection Successful!", Toast.LENGTH_SHORT).show()
+                    dialogOpen = false
+                }
             }
 
         }
