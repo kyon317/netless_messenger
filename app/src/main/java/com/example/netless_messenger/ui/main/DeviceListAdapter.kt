@@ -48,7 +48,18 @@ class DeviceListAdapter(private val _context: Context, private val deviceNameLis
                 deviceDialogIntent.action = "CLOSE_DEVICE_DIALOG"
                 context.sendBroadcast(deviceDialogIntent)
 
+                if(MainActivity.chatViewModel.isConnectedToDevice.value!!)
+                {
+                    val deviceDialogIntent = Intent()
+                    deviceDialogIntent.action = "KILL_CONNECTION"
+                    context.sendBroadcast(deviceDialogIntent)
+                }
+
                 loadingAnim.visibility = View.VISIBLE
+                while(!MainActivity.chatViewModel.isConnectionServiceRunning.value!!)
+                {
+
+                }
                 val msgIntent = Intent()
                 msgIntent.action = "ATTEMPT_CONNECTION"
                 msgIntent.putExtra("SELECTED_DEVICE",cur)

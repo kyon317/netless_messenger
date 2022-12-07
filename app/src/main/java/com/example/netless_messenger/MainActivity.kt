@@ -50,6 +50,18 @@ class MainActivity : AppCompatActivity() {
         // initialize Database
         messageTest = ViewModelProvider(this).get(MessageTestViewModel::class.java)
 
+        //Checking connection Running Status
+        chatViewModel.isConnectionServiceRunning.observe(this){
+            if(!it){
+                val connectionServicesIntent = Intent(this,ConnectionService::class.java)
+                startService(connectionServicesIntent)
+                applicationContext.bindService(connectionServicesIntent, MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
+
+
+                chatViewModel.resetFlag_isConnectionServiceRunning()
+            }
+        }
+
         //To debug ChatActivity.kt
 //        val intent = Intent(this, ChatActivity::class.java)
 //        startActivity(intent)
