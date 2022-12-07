@@ -3,7 +3,7 @@ Netless Messenger is a chatting application that works on Bluetooth spectrum (no
 This project was built as the final submission for CMPT 362 at Simon Fraser University
 
 ### 1. Original Pitch 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/d-pzWBWP9Aw/hqdefault.jpg)](https://www.youtube.com/watch?v=d-pzWBWP9Aw)
+[![PROJECT PITCH THUMBNAIL](https://img.youtube.com/vi/d-pzWBWP9Aw/hqdefault.jpg)](https://www.youtube.com/watch?v=d-pzWBWP9Aw)
 
 
 ### 2. Contributions
@@ -22,7 +22,7 @@ This project was built as the final submission for CMPT 362 at Simon Fraser Univ
 
 
 ### 5. Final Presentation
-
+[![FINAL PRESENTATION THUMBNAIL](https://img.youtube.com/vi/d-pzWBWP9Aw/hqdefault.jpg)](https://www.youtube.com/watch?v=d-pzWBWP9Aw)
 
 ### 6. Download Project
 <a id="project-zip" href="https://github.com/kyon317/netless_messenger/releases/download/v1.0.0/Netless_Messenger.apk.included.zip">Download ZIP File</a>
