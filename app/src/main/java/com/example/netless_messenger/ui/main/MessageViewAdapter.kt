@@ -1,18 +1,21 @@
 package com.example.netless_messenger.ui.main
 
 
+import android.app.Application
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.netless_messenger.Global
 import com.example.netless_messenger.R
 import com.example.netless_messenger.Util
 import com.example.netless_messenger.database.Message
 
-class MessageViewAdapter(private val messageList: ArrayList<Message>): RecyclerView.Adapter<MessageViewAdapter.MessageViewHolder>() {
+class MessageViewAdapter(private val context: Context, private val messageList: ArrayList<Message>): RecyclerView.Adapter<MessageViewAdapter.MessageViewHolder>() {
 
 
     inner class MessageViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -35,6 +38,7 @@ class MessageViewAdapter(private val messageList: ArrayList<Message>): RecyclerV
         holder.setIsRecyclable(false)
 
         val currMessage = messageList[position]
+        val currentView = holder.itemView.findViewById<RelativeLayout>(R.id.message_holder)
 
         val send_group = holder.itemView.findViewById<RelativeLayout>(R.id.send_group)
         val send_bubble = holder.itemView.findViewById<TextView>(R.id.send_bubble)
@@ -53,6 +57,7 @@ class MessageViewAdapter(private val messageList: ArrayList<Message>): RecyclerV
             send_bubble.text = currMessage.msgBody
             send_timestamp.text = Util.parseTimeStampToDate(currMessage.timeStamp)
         }
+
 
     }
 
