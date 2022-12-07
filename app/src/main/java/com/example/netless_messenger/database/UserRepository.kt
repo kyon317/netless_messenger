@@ -1,6 +1,7 @@
-package com.example.jiaqing_hu.database
+package com.example.netless_messenger.database
 
 import com.example.netless_messenger.database.User
+import com.example.netless_messenger.database.UserDatabaseDao
 import kotlinx.coroutines.flow.Flow
 
 /* UserRepository - Repository for view model to access and store database*/
