@@ -21,8 +21,10 @@ This project was built as the final submission for CMPT 362 at Simon Fraser Univ
 ### 4. Threded Design Diagram
 ![Threaded Design Diagram](https://github.com/kyon317/netless_messenger/blob/master/Threaded_Diagram.001.jpeg)
 
+(https://github.com/kyon317/netless_messenger/blob/master/Threaded_Diagram.001.jpeg)
+
 ### 5. Final Presentation
-[![FINAL PRESENTATION THUMBNAIL](https://img.youtube.com/vi/d-pzWBWP9Aw/hqdefault.jpg)](https://www.youtube.com/watch?v=d-pzWBWP9Aw)
+https://www.youtube.com/watch?v=e2H7EMa-TeI&ab_channel=TheGamerStrategy
 
 ### 6. Download Project
 <a id="project-zip" href="https://github.com/kyon317/netless_messenger/releases/download/v1.0.0/Netless_Messenger.apk.included.zip">Download ZIP File</a>
