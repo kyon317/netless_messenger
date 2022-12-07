@@ -177,7 +177,7 @@ class ChatActivity: AppCompatActivity() {
         back_button.setOnClickListener(){
             finish()
         }
-
+        //
         messageTest.allMessageLiveData.observe(this) {
         //commentViewModel.allCommentsLiveData.observe(this) {
             // show send message history
