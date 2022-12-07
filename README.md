@@ -1,6 +1,6 @@
 # Netless Messenger
-Netless Messenger is chatting application that works on Bluetooth spectrum (no internet required).
-This project was built as the final project for CMPT 362 at Simon Fraser University
+Netless Messenger is a chatting application that works on Bluetooth spectrum (no internet required).
+This project was built as the final submission for CMPT 362 at Simon Fraser University
 
 ### 1. Original Pitch 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/d-pzWBWP9Aw/hqdefault.jpg)](https://www.youtube.com/watch?v=d-pzWBWP9Aw)
