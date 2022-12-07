@@ -25,5 +25,5 @@ This project was built as the final project for CMPT 362 at Simon Fraser Univers
 
 
 ### 6. Download Project
-
+<a id="project-zip" href="https://github.com/kyon317/netless_messenger/releases/download/v1.0.0/Netless_Messenger.apk.included.zip">Download ZIP File</a>
 
