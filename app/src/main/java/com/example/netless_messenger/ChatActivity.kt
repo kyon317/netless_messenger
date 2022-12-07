@@ -208,8 +208,9 @@ class ChatActivity: AppCompatActivity() {
         chatViewModel.isConnectionServiceRunning.observe(this){
             if(!it){
                 val connectionServicesIntent = Intent(this,ConnectionService::class.java)
-                stopService(connectionServicesIntent)
-                applicationContext.unbindService(MainActivity.chatViewModel)
+                startService(connectionServicesIntent)
+                applicationContext.bindService(connectionServicesIntent, MainActivity.chatViewModel, Context.BIND_AUTO_CREATE)
+
 
                 chatViewModel.resetFlag_isConnectionServiceRunning()
             }
