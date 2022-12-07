@@ -184,7 +184,7 @@ class ChatActivity: AppCompatActivity() {
             retrieveUserMessages(incomingContact.deviceMAC)
             Thread.sleep(100)
 //            messageRecyclerView.adapter = MessageViewAdapter(it as ArrayList<Message>)
-            messageRecyclerView.adapter = MessageViewAdapter(messageList)
+            messageRecyclerView.adapter = MessageViewAdapter(this, messageList)
             messageRecyclerView.scrollToPosition(messageList.size - 1)
 
         }
@@ -203,6 +203,7 @@ class ChatActivity: AppCompatActivity() {
                 sendMessage(entry)
             }
         }
+
         //Checking connection Running Status
         chatViewModel.isConnectionServiceRunning.observe(this){
             if(!it){
